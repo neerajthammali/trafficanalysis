@@ -6,7 +6,7 @@ import { HelpCircle } from 'lucide-react';
 
 const faqs = [
   {
-    question: "What is the Traffic Calculator?",
+    question: "What is the Traffic Analyzer?",
     answer: "It's a tool to help you analyze traffic in your area. You can count different types of vehicles, record your observations about traffic conditions, and get AI-powered suggestions to improve traffic flow."
   },
   {
@@ -18,7 +18,7 @@ const faqs = [
     answer: "This application is built with modern web technologies. The frontend is built with Next.js and React, styled with Tailwind CSS and ShadCN UI components. The AI capabilities are powered by Google's Genkit."
   },
   {
-    question: "How do I use the Traffic Calculator?",
+    question: "How do I use the Traffic Analyzer?",
     answer: "It's a simple 3-step process: 1. Set Timer: Decide how long you want to observe the traffic. 2. Count Vehicles: Use the counters to tally vehicles as they pass. 3. Add Observations: Rate factors like pedestrian flow and traffic jams. Once you're done, the AI will generate a detailed report which you can export as a PDF."
   },
   {

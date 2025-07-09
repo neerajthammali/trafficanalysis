@@ -5,7 +5,7 @@ import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 
 export const metadata: Metadata = {
-  title: 'Traffic Calculator',
+  title: 'Traffic Analyzer',
   description: 'Analyze traffic patterns and get AI-powered insights for urban planning.',
 };
 

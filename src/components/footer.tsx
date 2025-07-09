@@ -16,14 +16,14 @@ export function Footer() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-muted-foreground">
         <nav className="mb-4 flex justify-center gap-x-6" aria-label="Footer navigation">
             <Link href="/" className="text-sm hover:text-primary transition-colors">
-              Calculator
+              Analyzer
             </Link>
             <Link href="/info" className="text-sm hover:text-primary transition-colors">
               Traffic Info
             </Link>
         </nav>
         <p className="flex items-center justify-center gap-1.5 text-sm">
-          <Copyright className="h-4 w-4" /> {currentYear} Traffic Calculator
+          <Copyright className="h-4 w-4" /> {currentYear} Traffic Analyzer
         </p>
         <p className="text-xs mt-2">
           Made with ❤️ by Neeraj Thammali

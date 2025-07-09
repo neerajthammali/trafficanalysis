@@ -11,7 +11,7 @@ export function Header() {
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-bold text-lg">
           <TrafficCone className="h-6 w-6 text-primary" />
-          <span className="hidden font-headline sm:inline-block">Traffic Calculator</span>
+          <span className="hidden font-headline sm:inline-block">Traffic Analyzer</span>
         </Link>
         
         {/* Desktop Nav */}
@@ -39,7 +39,7 @@ export function Header() {
                 <SheetTitle>
                   <Link href="/" className="flex items-center gap-2">
                     <TrafficCone className="h-6 w-6 text-primary" />
-                    <span>Traffic Calculator</span>
+                    <span>Traffic Analyzer</span>
                   </Link>
                 </SheetTitle>
               </SheetHeader>
@@ -47,7 +47,7 @@ export function Header() {
                 <nav className="grid gap-4 text-base font-medium">
                   <Link href="/" className="flex items-center gap-2 text-muted-foreground hover:text-primary">
                     <TrafficCone className="h-5 w-5" />
-                    Calculator
+                    Analyzer
                   </Link>
                   <Link href="/info" className="flex items-center gap-2 text-muted-foreground hover:text-primary">
                     <Info className="h-5 w-5" />
