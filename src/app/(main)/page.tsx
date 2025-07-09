@@ -30,7 +30,7 @@ function PageHeader() {
   return (
     <header className="mb-12 text-center">
       <h1 className="font-headline text-4xl font-bold text-primary sm:text-5xl lg:text-6xl">
-        Traffic Survey
+        Traffic Calculator
       </h1>
       <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
         Analyze traffic patterns and get AI-powered insights for urban planning.

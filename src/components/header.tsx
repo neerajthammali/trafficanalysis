@@ -27,30 +27,31 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
-        <div className="mr-4 flex items-center">
-          <Link href="/" className="flex items-center gap-2 font-bold">
+      <div className="container flex h-14 items-center justify-between">
+        <Link href="/" className="flex items-center gap-2 font-bold text-lg">
             <TrafficCone className="h-6 w-6 text-primary" />
-            <span className="hidden sm:inline-block text-lg">Traffic Calculator</span>
-          </Link>
+            <span className="hidden sm:inline-block">Traffic Calculator</span>
+        </Link>
+        
+        <div className="flex items-center gap-6">
+            <nav>
+                <Link
+                    href="/info"
+                    className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary flex items-center gap-1"
+                >
+                    <Info className="h-4 w-4" />
+                    <span className="hidden sm:inline-block">Traffic Info</span>
+                </Link>
+            </nav>
+            {isClient && (
+                <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <Badge variant={isPeak ? 'destructive' : 'default'} className={!isPeak ? 'bg-accent/80' : ''}>
+                    {isPeak ? 'Peak Hours' : 'Off-Peak'}
+                    </Badge>
+                </div>
+            )}
         </div>
-        <nav className="flex flex-1 items-center space-x-2 sm:space-x-4 lg:space-x-6">
-          <Link
-            href="/info"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary flex items-center gap-1"
-          >
-            <Info className="h-4 w-4" />
-            <span className="hidden sm:inline-block">Traffic Engineering Info</span>
-          </Link>
-        </nav>
-        {isClient && (
-          <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-muted-foreground" />
-            <Badge variant={isPeak ? 'destructive' : 'default'} className={!isPeak ? 'bg-accent/80' : ''}>
-              {isPeak ? 'Peak Hours' : 'Off-Peak'}
-            </Badge>
-          </div>
-        )}
       </div>
     </header>
   );
