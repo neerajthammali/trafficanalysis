@@ -11,16 +11,26 @@ import {
   TableCaption,
 } from '@/components/ui/table';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
 
 interface TrafficDataTableProps {
   data: RecordedTrafficData[];
+  onExportPDF: () => void;
+  isExportDisabled: boolean;
 }
 
-export function TrafficDataTable({ data }: TrafficDataTableProps) {
+export function TrafficDataTable({ data, onExportPDF, isExportDisabled }: TrafficDataTableProps) {
   return (
     <Card className="shadow-lg">
       <CardHeader>
-        <CardTitle className="font-headline text-2xl">Recorded Data</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="font-headline text-2xl">Recorded Data</CardTitle>
+          <Button onClick={onExportPDF} disabled={isExportDisabled} variant="outline">
+            <Download className="mr-2 h-4 w-4" />
+            Export PDF
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="border rounded-md">

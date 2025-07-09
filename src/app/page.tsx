@@ -50,6 +50,72 @@ export default function Home() {
     }
   };
 
+  const handleExportPDF = async () => {
+    if (!analysisResult || recordedData.length === 0) {
+      toast({
+        variant: 'destructive',
+        title: 'No Data to Export',
+        description: 'Please generate an analysis before exporting.',
+      });
+      return;
+    }
+
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
+
+    const doc = new jsPDF();
+    let yPos = 22;
+
+    // Title
+    doc.setFontSize(20);
+    doc.text('Traffic Analysis Report', 14, yPos);
+    yPos += 15;
+
+    // Analysis
+    doc.setFontSize(16);
+    doc.text('AI-Powered Analysis', 14, yPos);
+    yPos += 8;
+    doc.setFontSize(11);
+    const analysisLines = doc.splitTextToSize(
+      `Conclusion: ${analysisResult.analysis.conclusion}\n\nRecommendations: ${analysisResult.analysis.recommendations}`,
+      180
+    );
+    doc.text(analysisLines, 14, yPos);
+    yPos += analysisLines.length * 5 + 10;
+
+    // Improvements
+    doc.setFontSize(16);
+    doc.text('Improvement Suggestions', 14, yPos);
+    yPos += 8;
+    doc.setFontSize(11);
+    const improvementLines = doc.splitTextToSize(
+      analysisResult.improvements.suggestions,
+      180
+    );
+    doc.text(improvementLines, 14, yPos);
+    yPos += improvementLines.length * 5 + 5;
+
+
+    // Data Table
+    autoTable(doc, {
+      startY: yPos,
+      head: [['Interval', 'Time Type', '2-Wheelers', '3-Wheelers', '4-Wheelers', 'Heavy Vehicles']],
+      body: recordedData.map(entry => [
+        entry.timeInterval,
+        entry.trafficTime,
+        entry.twoWheelers,
+        entry.threeWheelers,
+        entry.fourWheelers,
+        entry.heavyVehicles
+      ]),
+      headStyles: { fillColor: '#16a34a' }, // Accent color
+    });
+
+    doc.save('traffic-report.pdf');
+  };
+
+  const isExportDisabled = recordedData.length === 0 || !analysisResult;
+
   return (
     <main className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
       <Header />
@@ -62,7 +128,11 @@ export default function Home() {
         </div>
       </div>
       <div className="mt-12">
-        <TrafficDataTable data={recordedData} />
+        <TrafficDataTable 
+          data={recordedData} 
+          onExportPDF={handleExportPDF} 
+          isExportDisabled={isExportDisabled} 
+        />
       </div>
       <div className="mt-12">
         <TrafficInfo />
