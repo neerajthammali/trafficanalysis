@@ -1,13 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import type { TrafficData, RecordedTrafficData, AnalysisResult } from '@/lib/types';
+import type { TrafficData, RecordedTrafficData, AnalysisResult, VehicleChartData } from '@/lib/types';
 import { getTrafficInsights } from '@/lib/actions';
 import { TrafficForm } from '@/components/traffic-form';
 import { TrafficAnalysis } from '@/components/traffic-analysis';
 import { TrafficDataTable } from '@/components/traffic-data-table';
 import { useToast } from "@/hooks/use-toast";
 import { TrafficInfo } from '@/components/traffic-info';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { TrafficChart } from '@/components/traffic-chart';
+import { Users } from 'lucide-react';
 
 function Header() {
   return (
@@ -22,17 +25,50 @@ function Header() {
   );
 }
 
+function TotalVehicleCard({ total }: { total: number | null }) {
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">Total Vehicles</CardTitle>
+        <Users className="h-4 w-4 text-muted-foreground" />
+      </CardHeader>
+      <CardContent>
+        {total === null ? (
+           <div className="text-2xl font-bold">-</div>
+        ) : (
+          <div className="text-2xl font-bold">{total}</div>
+        )}
+        <p className="text-xs text-muted-foreground">In the selected interval</p>
+      </CardContent>
+    </Card>
+  )
+}
+
 export default function Home() {
   const [recordedData, setRecordedData] = useState<RecordedTrafficData[]>([]);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+  const [chartData, setChartData] = useState<VehicleChartData[]>([]);
+  const [totalVehicles, setTotalVehicles] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const handleFormSubmit = async (data: TrafficData) => {
     setIsLoading(true);
+    setAnalysisResult(null);
     const newEntry = { ...data, id: new Date().toISOString() };
     
     setRecordedData(prev => [newEntry, ...prev]);
+
+    const { twoWheelers, threeWheelers, fourWheelers, heavyVehicles } = data;
+    const total = twoWheelers + threeWheelers + fourWheelers + heavyVehicles;
+    setTotalVehicles(total);
+
+    setChartData([
+      { name: '2-Wheelers', value: twoWheelers, fill: 'hsl(var(--chart-1))' },
+      { name: '3-Wheelers', value: threeWheelers, fill: 'hsl(var(--chart-2))' },
+      { name: '4-Wheelers', value: fourWheelers, fill: 'hsl(var(--chart-3))' },
+      { name: 'Heavy', value: heavyVehicles, fill: 'hsl(var(--chart-4))' },
+    ]);
 
     try {
       const result = await getTrafficInsights(data);
@@ -45,6 +81,8 @@ export default function Home() {
         description: "There was an error processing your request. Please try again.",
       });
       setRecordedData(prev => prev.filter(item => item.id !== newEntry.id));
+      setTotalVehicles(null);
+      setChartData([]);
     } finally {
       setIsLoading(false);
     }
@@ -66,26 +104,23 @@ export default function Home() {
     const doc = new jsPDF();
     let yPos = 22;
 
-    // Title
     doc.setFontSize(20);
     doc.text('Traffic Analysis Report', 14, yPos);
     yPos += 15;
 
-    // Analysis
     doc.setFontSize(16);
-    doc.text('AI-Powered Analysis', 14, yPos);
+    doc.text('AI-Powered Analysis & Precautions', 14, yPos);
     yPos += 8;
     doc.setFontSize(11);
     const analysisLines = doc.splitTextToSize(
-      `Conclusion: ${analysisResult.analysis.conclusion}\n\nRecommendations: ${analysisResult.analysis.recommendations}`,
+      `Conclusion: ${analysisResult.analysis.conclusion}\n\nPrecautions: ${analysisResult.analysis.precautions}`,
       180
     );
     doc.text(analysisLines, 14, yPos);
     yPos += analysisLines.length * 5 + 10;
 
-    // Improvements
     doc.setFontSize(16);
-    doc.text('Improvement Suggestions', 14, yPos);
+    doc.text('Development Suggestions', 14, yPos);
     yPos += 8;
     doc.setFontSize(11);
     const improvementLines = doc.splitTextToSize(
@@ -93,10 +128,24 @@ export default function Home() {
       180
     );
     doc.text(improvementLines, 14, yPos);
-    yPos += improvementLines.length * 5 + 5;
+    yPos += improvementLines.length * 5 + 10;
 
+    doc.setFontSize(16);
+    doc.text('Observations from Last Entry', 14, yPos);
+    yPos += 8;
+    doc.setFontSize(11);
+    const lastEntry = recordedData[0];
+    const observationText = [
+      `Human Flow: ${lastEntry.humanFlow}`,
+      `Jams: ${lastEntry.jams}`,
+      `Delays: ${lastEntry.delays}`,
+      `Signals: ${lastEntry.signals}`,
+      `Wrong Direction: ${lastEntry.wrongDirection}`,
+    ].join('\n\n');
+    const observationLines = doc.splitTextToSize(observationText, 180);
+    doc.text(observationLines, 14, yPos);
+    yPos += observationLines.length * 5 + 5;
 
-    // Data Table
     autoTable(doc, {
       startY: yPos,
       head: [['Interval', 'Time Type', '2-Wheelers', '3-Wheelers', '4-Wheelers', 'Heavy Vehicles']],
@@ -108,7 +157,7 @@ export default function Home() {
         entry.fourWheelers,
         entry.heavyVehicles
       ]),
-      headStyles: { fillColor: '#16a34a' }, // Accent color
+      headStyles: { fillColor: 'hsl(var(--primary))' },
     });
 
     doc.save('traffic-report.pdf');
@@ -123,8 +172,12 @@ export default function Home() {
         <div className="lg:col-span-2">
           <TrafficForm onSubmit={handleFormSubmit} isLoading={isLoading} />
         </div>
-        <div className="lg:col-span-3">
-          <TrafficAnalysis analysisResult={analysisResult} isLoading={isLoading} />
+        <div className="lg:col-span-3 space-y-8">
+            <div className="grid md:grid-cols-2 gap-8">
+              <TotalVehicleCard total={totalVehicles} />
+              <TrafficChart data={chartData} />
+            </div>
+            <TrafficAnalysis analysisResult={analysisResult} isLoading={isLoading} />
         </div>
       </div>
       <div className="mt-12">

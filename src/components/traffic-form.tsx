@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Bike, CarFront, Car, Truck, LoaderCircle } from 'lucide-react';
+import { Bike, Car, CarFront, LoaderCircle, Truck, Ban } from 'lucide-react';
 import { CounterInput } from './counter-input';
 
 interface TrafficFormProps {
@@ -50,6 +50,7 @@ export function TrafficForm({ onSubmit, isLoading }: TrafficFormProps) {
       jams: '',
       delays: '',
       signals: '',
+      wrongDirection: '',
     },
   });
 
@@ -144,6 +145,12 @@ export function TrafficForm({ onSubmit, isLoading }: TrafficFormProps) {
                 )}/>
                 <FormField control={form.control} name="signals" render={({ field }) => (
                     <FormItem><FormLabel>Signals</FormLabel><FormControl><Textarea placeholder="e.g., Signal timing seems short for peak hours..." {...field} /></FormControl><FormMessage /></FormItem>
+                )}/>
+                <FormField control={form.control} name="wrongDirection" render={({ field }) => (
+                    <FormItem><FormLabel className="flex items-center gap-2">
+                      <Ban className="h-4 w-4" />
+                      Wrong Direction Driving
+                      </FormLabel><FormControl><Textarea placeholder="e.g., Motorbikes frequently drive on the wrong side..." {...field} /></FormControl><FormMessage /></FormItem>
                 )}/>
             </div>
 
