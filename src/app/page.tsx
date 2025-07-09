@@ -17,7 +17,7 @@ import { CounterInput } from '@/components/counter-input';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Bike, Car, CarFront, Users, Truck, Timer, Play, Redo, LoaderCircle } from 'lucide-react';
+import { Bike, Car, CarFront, Users, Truck, Timer, Play, Redo, LoaderCircle, Download, Share2 } from 'lucide-react';
 
 const vehicleTypes = [
   { name: 'twoWheelers', label: '2-Wheelers', icon: Bike },
@@ -50,10 +50,20 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const chartRef = useRef<HTMLDivElement>(null);
+  const reportSectionRef = useRef<HTMLDivElement>(null);
 
 
   const form = useForm<TrafficDetailsData>({
     resolver: zodResolver(TrafficDetailsSchema),
+    defaultValues: {
+        humanFlow: 'Normal',
+        jams: 'Normal',
+        delays: 'Normal',
+        signals: 'Normal',
+        wrongDirection: 'Less',
+        locality: 'Mixed-use',
+        congestionCause: 'Peak Hour Rush',
+    }
   });
 
   useEffect(() => {
@@ -195,6 +205,54 @@ export default function Home() {
     doc.save('traffic-report.pdf');
   };
 
+  const handleShareImage = async () => {
+    if (!reportSectionRef.current) {
+      toast({ variant: 'destructive', title: 'Report content not available.' });
+      return;
+    }
+    setIsLoading(true);
+
+    try {
+      const { toBlob } = await import('html-to-image');
+      const blob = await toBlob(reportSectionRef.current, {
+        cacheBust: true,
+        backgroundColor: window.getComputedStyle(document.body).backgroundColor,
+        pixelRatio: 1.5,
+      });
+
+      if (!blob) throw new Error('Image creation failed');
+
+      const file = new File([blob], 'traffic-report.png', { type: blob.type });
+
+      if (navigator.share && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'Traffic Analysis Report',
+          text: 'Here is my traffic analysis report.',
+        });
+      } else {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'traffic-report.png';
+        link.click();
+        URL.revokeObjectURL(link.href);
+        toast({
+          title: "Report Downloaded",
+          description: "Web Share API is not available, the report was downloaded instead.",
+        });
+      }
+    } catch (error) {
+      console.error('Failed to share image:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Sharing Failed',
+        description: 'An error occurred while trying to generate the image.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
     const secs = (seconds % 60).toString().padStart(2, '0');
@@ -262,44 +320,74 @@ export default function Home() {
         );
       case 'details':
       case 'analyzing':
+        return (
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+            <div className="lg:col-span-2">
+              {surveyStep === 'details' ? (
+                <TrafficDetailsForm form={form} onSubmit={handleDetailsSubmit} isLoading={isLoading} />
+              ) : ( // This covers the 'analyzing' state
+                <div className="flex flex-col gap-4 sticky top-8">
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Total Vehicles</CardTitle>
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">{totalVehicles}</div>
+                      <p className="text-xs text-muted-foreground">Recorded in {duration} minute(s)</p>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+            </div>
+            <div className="lg:col-span-3 space-y-8">
+              <div className="bg-card p-2 rounded-lg"><TrafficChart data={chartData} /></div>
+              <TrafficAnalysis analysisResult={analysisResult} isLoading={isLoading} />
+            </div>
+          </div>
+        );
       case 'complete':
         return (
-          <>
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
-              <div className="lg:col-span-2">
-                {surveyStep === 'details' ? (
-                  <TrafficDetailsForm form={form} onSubmit={handleDetailsSubmit} isLoading={isLoading} />
-                ) : surveyStep === 'analyzing' || surveyStep === 'complete' ? (
-                  <div className="flex flex-col gap-4 sticky top-8">
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Vehicles</CardTitle>
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-2xl font-bold">{totalVehicles}</div>
-                        <p className="text-xs text-muted-foreground">Recorded in {duration} minute(s)</p>
-                      </CardContent>
-                    </Card>
-                    <Button onClick={handleReset} variant="outline"><Redo className="mr-2" /> Start New Survey</Button>
-                  </div>
-                ) : null}
-              </div>
-              <div className="lg:col-span-3 space-y-8">
-                <div ref={chartRef} className="bg-card p-2 rounded-lg"><TrafficChart data={chartData} /></div>
-                <TrafficAnalysis analysisResult={analysisResult} isLoading={isLoading} />
-              </div>
+          <div className="space-y-8">
+            <Card>
+                <CardContent className="p-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+                     <div className="text-center sm:text-left flex-1">
+                        <h3 className="text-lg font-semibold">Survey Complete!</h3>
+                        <p className="text-sm text-muted-foreground">Your report is ready below. You can start a new survey or export your results.</p>
+                     </div>
+                     <div className="flex flex-wrap items-center justify-center gap-2">
+                        <Button onClick={handleReset} variant="outline" className="w-full sm:w-auto"><Redo className="mr-2" /> New Survey</Button>
+                        <Button onClick={handleExportPDF} disabled={!analysisResult || isLoading} className="w-full sm:w-auto"><Download className="mr-2" /> Export PDF</Button>
+                        <Button onClick={handleShareImage} disabled={!analysisResult || isLoading} className="w-full sm:w-auto">
+                            {isLoading ? <LoaderCircle className="mr-2 animate-spin" /> : <Share2 className="mr-2" />}
+                            Share Image
+                        </Button>
+                     </div>
+                </CardContent>
+            </Card>
+
+            <div ref={reportSectionRef} className="p-4 sm:p-8 bg-background dark:bg-card rounded-lg border shadow-lg space-y-8">
+                <div className="text-center">
+                    <h2 className="font-headline text-3xl font-bold text-primary">Traffic Analysis Report</h2>
+                    <p className="text-muted-foreground">Generated on {new Date().toLocaleDateString()}</p>
+                </div>
+                
+                <div ref={chartRef} className="bg-card p-2 rounded-lg">
+                    <TrafficChart data={chartData} />
+                </div>
+                
+                <TrafficAnalysis analysisResult={analysisResult} isLoading={false} />
+                
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="font-headline text-2xl">Survey Data</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <TrafficDataTable data={recordedData} />
+                    </CardContent>
+                </Card>
             </div>
-            {surveyStep === 'complete' && (
-              <div className="mt-12">
-                <TrafficDataTable 
-                  data={recordedData} 
-                  onExportPDF={handleExportPDF} 
-                  isExportDisabled={!analysisResult} 
-                />
-              </div>
-            )}
-          </>
+          </div>
         );
       default:
         return null;
