@@ -1,3 +1,4 @@
+
 import { Github, Linkedin, Instagram, Globe } from 'lucide-react';
 import Link from 'next/link';
 
@@ -6,46 +7,46 @@ export default function InfoPage() {
         <main className="flex-grow container mx-auto px-4 py-8 sm:px-6 lg:px-8">
             <header className="mb-12 text-center">
                 <h1 className="font-headline text-4xl font-bold text-primary sm:text-5xl lg:text-6xl">
-                    About the Traffic Calculator
+                    My Awesome Traffic Calculator Story!
                 </h1>
                 <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-                    A tool for Traffic Volume Analysis and Road Improvement Strategies.
+                   Hi, I'm Neeraj! Let me tell you how this cool tool came to be.
                 </p>
             </header>
             <article className="prose prose-lg dark:prose-invert max-w-4xl mx-auto">
                 <h2>Why I Built This</h2>
                 <p>
-                    This Traffic Calculator was born out of a passion for urban planning and a need for a practical tool for my college project on "Traffic Volume Analysis and Road Improvement Strategies." The goal was to create a simple yet powerful application that could help anyone, from students to city planners, to collect and analyze traffic data effectively. It bridges the gap between manual traffic counts and complex simulation software, offering an accessible entry point into data-driven traffic management.
+                    For my college project, I had to learn all about "Traffic Volume Analysis and Road Improvement Strategies." Sounds super serious, right? Well, I wanted to make it fun! So, I decided to build this little app. My big idea was to create something that wasn't boring, but was super easy for anyone to use to count cars and see how traffic really works. It’s like a video game, but for real roads!
                 </p>
 
-                <h2>The Purpose of This Tool</h2>
+                <h2>What's The Big Idea?</h2>
                 <p>
-                    The core purpose of this tool is to democratize traffic analysis. By inputting vehicle counts and observational data, users can:
+                    So, what does this thing actually do? It's like a traffic detective kit! With it, you can:
                 </p>
                 <ul>
-                    <li><strong>Quantify Traffic Volume:</strong> Get clear numbers on the types of vehicles using a particular road.</li>
-                    <li><strong>Identify Patterns:</strong> Understand how traffic flow changes during different times of the day.</li>
-                    <li><strong>Gain AI-Powered Insights:</strong> Receive automated analysis and concrete suggestions for improving traffic flow and safety, powered by generative AI.</li>
-                    <li><strong>Generate Reports:</strong> Export the findings into a professional PDF report, perfect for presentations and project submissions.</li>
+                    <li><strong>Count Things That Go Vroom:</strong> Keep a tally of all the bikes, cars, and big trucks passing by.</li>
+                    <li><strong>Spot the Rush Hour:</strong> Figure out if it's a super busy time or a sleepy time on the road.</li>
+                    <li><strong>Get Secret AI Tips:</strong> Ask the super-smart AI brain for cool ideas on how to fix traffic jams!</li>
+                    <li><strong>Make Awesome Reports:</strong> Turn your findings into a cool PDF report to show your friends or your teacher.</li>
                 </ul>
                 <p>
-                    Ultimately, it's about making our roads safer and more efficient, one data point at a time.
+                    My dream is to help make our streets a little bit better and safer for everyone, one count at a time!
                 </p>
 
-                <h2>How It Can Be Used</h2>
+                <h2>How Do I Use It?</h2>
                 <p>
-                    Using the calculator is straightforward:
+                    Ready to play? It's easy-peasy!
                 </p>
                 <ol>
-                    <li><strong>Set the Timer:</strong> Start by setting a duration for your observation period on the main page.</li>
-                    <li><strong>Count Vehicles:</strong> As vehicles pass, use the intuitive counters for different vehicle types (2-wheelers, 4-wheelers, etc.).</li>
-                    <li><strong>Add Observations:</strong> Once the timer finishes, you'll be prompted to provide qualitative data about traffic conditions like pedestrian flow, congestion levels, and potential causes.</li>
-                    <li><strong>Analyze and Export:</strong> Submit your data to receive an instant AI-generated analysis and improvement suggestions. You can then view this data in a table and export the entire report as a PDF.</li>
+                    <li><strong>Start the Clock:</strong> First, tell the app how long you want to watch the road for.</li>
+                    <li><strong>Tap, Tap, Tap:</strong> Every time a vehicle goes by, just tap the right counter button. Simple!</li>
+                    <li><strong>Be a Detective:</strong> When time's up, the app will ask you some questions. Was it crowded? Were there jams? You're the expert!</li>
+                    <li><strong>BAM! See the Magic:</strong> The AI will whip up a report with ideas to make the roads better. You can even save it as a PDF!</li>
                 </ol>
 
-                <h2>Connect With Me</h2>
+                <h2>Let's Be Friends!</h2>
                 <p>
-                    This project was a fantastic learning experience. I'm always open to feedback, collaboration, or just a friendly chat about technology and urbanism. You can find me here:
+                    Making this was SO much fun, and I learned a ton. If you have any cool ideas, find a bug, or just want to say hi, you can find me on the internet! I'd love to connect.
                 </p>
                 <div className="not-prose mt-8 flex items-center justify-center gap-8">
                     <Link href="https://github.com/neerajthammali" target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-primary">
