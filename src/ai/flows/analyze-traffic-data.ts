@@ -30,6 +30,7 @@ const AnalyzeTrafficDataInputSchema = z.object({
   wrongDirection: RatingEnum.describe('The rated level of vehicles traveling in the wrong direction.'),
   locality: LocalityEnum.describe('The type of road locality.'),
   congestionCause: CongestionCauseEnum.describe('The primary cause of congestion.'),
+  remarks: z.string().optional().describe('Additional remarks from the user about road conditions or other factors.'),
 });
 export type AnalyzeTrafficDataInput = z.infer<typeof AnalyzeTrafficDataInputSchema>;
 
@@ -64,6 +65,9 @@ And here's what it felt like:
 - Traffic lights helping (or not!): {{{signals}}}
 - Oops! Cars going the wrong way: {{{wrongDirection}}}
 - Main reason for traffic trouble: {{{congestionCause}}}
+{{#if remarks}}
+- Other notes: {{{remarks}}}
+{{/if}}
 
 Now, tell me two things in simple words. Each response should be between 50 and 150 words.
 1.  **Conclusion:** What's the main traffic story? Is it super busy? Which vehicle is the king of the road right now? Keep it short and snappy!

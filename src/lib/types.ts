@@ -21,6 +21,7 @@ export const TrafficDataSchema = z.object({
   wrongDirection: RatingEnum,
   locality: LocalityEnum,
   congestionCause: CongestionCauseEnum,
+  remarks: z.string().optional().describe('Additional remarks or observations about road conditions.'),
 });
 
 export const TrafficDetailsSchema = TrafficDataSchema.pick({
@@ -31,6 +32,7 @@ export const TrafficDetailsSchema = TrafficDataSchema.pick({
   wrongDirection: true,
   locality: true,
   congestionCause: true,
+  remarks: true,
 });
 export type TrafficDetailsData = z.infer<typeof TrafficDetailsSchema>;
 

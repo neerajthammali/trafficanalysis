@@ -42,6 +42,7 @@ export function TrafficDataTable({ data }: TrafficDataTableProps) {
                 <TableHead>Wrong Dir.</TableHead>
                 <TableHead>Locality</TableHead>
                 <TableHead>Cause</TableHead>
+                <TableHead>Remarks</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
@@ -57,6 +58,7 @@ export function TrafficDataTable({ data }: TrafficDataTableProps) {
                     <TableCell><Badge variant={getBadgeVariant(entry.wrongDirection)}>{entry.wrongDirection}</Badge></TableCell>
                     <TableCell><Badge variant="outline">{entry.locality}</Badge></TableCell>
                     <TableCell><Badge variant="outline">{entry.congestionCause}</Badge></TableCell>
+                    <TableCell className="max-w-[200px] truncate" title={entry.remarks}>{entry.remarks || 'N/A'}</TableCell>
                 </TableRow>
                 ))}
             </TableBody>

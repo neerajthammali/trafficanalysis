@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -14,6 +15,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { LoaderCircle } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 
 interface TrafficDetailsFormProps {
   form: UseFormReturn<TrafficDetailsData>;
@@ -21,7 +23,7 @@ interface TrafficDetailsFormProps {
   isLoading: boolean;
 }
 
-const detailFields: {name: keyof TrafficDetailsData, label: string, options: readonly string[]}[] = [
+const detailFields: {name: keyof Omit<TrafficDetailsData, 'remarks'>, label: string, options: readonly string[]}[] = [
     { name: 'humanFlow', label: 'Human Flow', options: ['Less', 'Moderate', 'Normal', 'High'] },
     { name: 'jams', label: 'Traffic Jams', options: ['Less', 'Moderate', 'Normal', 'High'] },
     { name: 'delays', label: 'Travel Delays', options: ['Less', 'Moderate', 'Normal', 'High'] },
@@ -71,6 +73,28 @@ export function TrafficDetailsForm({ form, onSubmit, isLoading }: TrafficDetails
                     )}
                 />
             ))}
+
+            <FormField
+              control={form.control}
+              name="remarks"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-semibold">Additional Remarks</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="e.g., Potholes on the road, poor visibility, etc."
+                      className="resize-y"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Optionally, add any other notes about road conditions.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
 
             <Button type="submit" disabled={isLoading} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
               {isLoading ? (
