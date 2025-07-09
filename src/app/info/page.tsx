@@ -23,28 +23,24 @@ export default function InfoPage() {
                 </p>
 
                 <h2>Key Features</h2>
-                <p>
-                    This app is a complete toolkit for basic traffic analysis:
-                </p>
-                <ul>
-                    <li><strong>Vehicle Counting:</strong> Tally various vehicle types in real-time.</li>
-                    <li><strong>Contextual Data:</strong> Record observations on traffic flow, congestion, and other qualitative factors.</li>
-                    <li><strong>AI-Powered Insights:</strong> Receive automated analysis and improvement suggestions based on your data.</li>
-                    <li><strong>PDF Reporting:</strong> Export your findings into a clean, professional PDF document.</li>
+                
+                <p>This app is a complete toolkit for basic traffic analysis:</p>
+                <ul className="list-disc pl-5 space-y-2">
+                    <li><strong>Vehicle Counting:</strong> Easily tally various vehicle types in real-time.</li>
+                    <li><strong>Contextual Data:</strong> Record crucial observations on traffic flow, congestion, and other qualitative factors that numbers alone can't capture.</li>
+                    <li><strong>AI-Powered Insights:</strong> Receive automated analysis, safety precautions, and actionable improvement suggestions based on your data.</li>
+                    <li><strong>PDF Reporting:</strong> Export your complete findings—charts, analysis, and data—into a clean, professional PDF document with a single click.</li>
                 </ul>
-                <p>
-                    The ultimate vision is to provide a simple yet effective way to gather data that can contribute to safer and more efficient roads.
-                </p>
 
                 <h2>How to Use It</h2>
                 <p>
                     Getting started is straightforward:
                 </p>
-                <ol>
+                <ol className="list-decimal pl-5 space-y-2">
                     <li><strong>Set Survey Duration:</strong> Define the time period for your observation.</li>
                     <li><strong>Count Vehicles:</strong> Use the dedicated counters to log passing vehicles.</li>
-                    <li><strong>Add Observations:</strong> After the timer ends, provide details on traffic conditions.</li>
-                    <li><strong>Generate Report:</strong> The AI will process your data and create a comprehensive report, ready for export.</li>
+                    <li><strong>Add Observations:</strong> After the timer ends, provide details on traffic conditions using the guided form.</li>
+                    <li><strong>Generate Report:</strong> The AI will process your data and create a comprehensive report, ready for you to review and export.</li>
                 </ol>
 
                 <h2>Connect With Me</h2>

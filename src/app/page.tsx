@@ -17,7 +17,7 @@ import { CounterInput } from '@/components/counter-input';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Bike, Car, CarFront, Users, Truck, Timer, Play, Redo, LoaderCircle, Download } from 'lucide-react';
+import { Bike, Car, CarFront, Truck, Timer, Play, Redo, LoaderCircle, Download } from 'lucide-react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { toPng } from 'html-to-image';
@@ -54,7 +54,6 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [isPdfLoading, setIsPdfLoading] = useState(false);
   const { toast } = useToast();
-  const chartRef = useRef<HTMLDivElement>(null);
   const reportSectionRef = useRef<HTMLDivElement>(null);
 
 
@@ -150,96 +149,36 @@ export default function Home() {
   }
   
   const handleExportPdf = async () => {
-    if (!analysisResult || !chartRef.current) {
+    if (!reportSectionRef.current) {
         toast({ variant: 'destructive', title: 'Report content not available.' });
         return;
     }
     setIsPdfLoading(true);
 
     try {
-        const doc = new jsPDF();
-        const chartImage = await toPng(chartRef.current, { cacheBust: true, pixelRatio: 2 });
+        const reportImage = await toPng(reportSectionRef.current, { 
+            cacheBust: true, 
+            pixelRatio: 2,
+            backgroundColor: 'white' // Explicitly set background for consistency
+        });
         
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(20);
-        doc.text('Traffic Analysis Report', 15, 20);
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 15, 26);
-        doc.setLineWidth(0.5);
-        doc.line(15, 28, 195, 28);
-
-        let yPos = 35;
-
-        doc.addImage(chartImage, 'PNG', 15, yPos, 180, 100);
-        yPos += 110;
-
-        doc.setFontSize(16);
-        doc.setFont('helvetica', 'bold');
-        doc.text('AI-Powered Insights', 15, yPos);
-        yPos += 8;
-
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Conclusion & Precautions', 15, yPos);
-        yPos += 6;
-
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        const analysisText = `Conclusion: ${analysisResult.analysis.conclusion}\n\nPrecautions: ${analysisResult.analysis.precautions}`;
-        const splitAnalysisText = doc.splitTextToSize(analysisText, 180);
-        doc.text(splitAnalysisText, 15, yPos);
-        yPos += (splitAnalysisText.length * 4) + 10;
-
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Development Suggestions', 15, yPos);
-        yPos += 6;
+        const doc = new jsPDF('p', 'px');
+        const docWidth = doc.internal.pageSize.getWidth();
+        const imgProps = doc.getImageProperties(reportImage);
+        const imgHeight = (imgProps.height * docWidth) / imgProps.width;
         
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        const suggestionsText = analysisResult.improvements.suggestions;
-        const splitSuggestionsText = doc.splitTextToSize(suggestionsText, 180);
-        doc.text(splitSuggestionsText, 15, yPos);
-        
-        if (recordedData.length > 0) {
-            doc.addPage();
-            yPos = 20;
-
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Survey Data', 15, yPos);
-            yPos += 10;
-
-            (doc as any).autoTable({
-                startY: yPos,
-                head: [['Interval', '2W', '3W', '4W', 'Heavy', 'Jams', 'Delays', 'Wrong Dir.', 'Locality', 'Cause', 'Remarks']],
-                body: recordedData.map(entry => [
-                    entry.timeInterval,
-                    entry.twoWheelers,
-                    entry.threeWheelers,
-                    entry.fourWheelers,
-                    entry.heavyVehicles,
-                    entry.jams,
-                    entry.delays,
-                    entry.wrongDirection,
-                    entry.locality,
-                    entry.congestionCause,
-                    entry.remarks || 'N/A'
-                ]),
-                theme: 'grid',
-                headStyles: { fillColor: [22, 160, 133] },
-            });
-        }
+        doc.addImage(reportImage, 'PNG', 0, 0, docWidth, imgHeight);
         
         const pageCount = (doc as any).internal.getNumberOfPages();
-        for (let i = 1; i <= pageCount; i++) {
-            doc.setPage(i);
-            doc.setFontSize(8);
-            doc.text(`Page ${i} of ${pageCount}`, doc.internal.pageSize.width - 25, doc.internal.pageSize.height - 10);
+        if (pageCount > 1) { // Add page numbers only if there's more than one page
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.text(`Page ${i} of ${pageCount}`, doc.internal.pageSize.width - 40, doc.internal.pageSize.height - 10);
+            }
         }
-
-        doc.save('traffic-report.pdf');
+        
+        doc.save('traffic-analysis-report.pdf');
 
     } catch (error) {
         console.error('Failed to export PDF:', error);
@@ -324,25 +263,10 @@ export default function Home() {
         return (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
             <div className="md:col-span-1">
-              {surveyStep === 'details' ? (
                 <TrafficDetailsForm form={form} onSubmit={handleDetailsSubmit} isLoading={isLoading} />
-              ) : ( // This covers the 'analyzing' state
-                <div className="flex flex-col gap-4 sticky top-8">
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Total Vehicles</CardTitle>
-                      <Users className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">{totalVehicles}</div>
-                      <p className="text-xs text-muted-foreground">Recorded in {duration} minute(s)</p>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
             </div>
             <div className="md:col-span-2 space-y-8">
-              <div className="bg-card p-2 rounded-lg"><TrafficChart data={chartData} /></div>
+              <div className="bg-card p-2 rounded-lg shadow-md"><TrafficChart data={chartData} /></div>
               <TrafficAnalysis analysisResult={analysisResult} isLoading={isLoading} />
             </div>
           </div>
@@ -354,7 +278,7 @@ export default function Home() {
                 <CardContent className="p-4 flex flex-col sm:flex-row items-center justify-center gap-4">
                      <div className="text-center sm:text-left flex-1">
                         <h3 className="text-lg font-semibold">Survey Complete!</h3>
-                        <p className="text-sm text-muted-foreground">Your report is ready below. You can start a new survey or download your results as a PDF.</p>
+                        <p className="text-sm text-muted-foreground">Your report is ready below. You can start a new survey or download your results.</p>
                      </div>
                      <div className="flex flex-wrap items-center justify-center gap-2">
                         <Button onClick={handleReset} variant="outline" className="w-full sm:w-auto"><Redo className="mr-2" /> New Survey</Button>
@@ -366,13 +290,13 @@ export default function Home() {
                 </CardContent>
             </Card>
 
-            <div ref={reportSectionRef} className="p-4 sm:p-8 bg-background dark:bg-card rounded-lg border shadow-lg space-y-8">
-                <div className="text-center">
+            <div ref={reportSectionRef} className="p-4 sm:p-6 bg-white dark:bg-card rounded-lg border shadow-lg space-y-6">
+                <div className="text-center pb-4 border-b">
                     <h2 className="font-headline text-3xl font-bold text-primary">Traffic Analysis Report</h2>
                     <p className="text-muted-foreground">Generated on {new Date().toLocaleDateString()}</p>
                 </div>
                 
-                <div ref={chartRef} className="bg-card p-2 rounded-lg">
+                <div className="bg-card p-2 rounded-lg">
                     <TrafficChart data={chartData} />
                 </div>
                 

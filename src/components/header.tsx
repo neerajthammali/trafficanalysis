@@ -7,7 +7,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 
 export function Header() {
   return (
-    <header className="w-full border-b bg-background">
+    <header className="w-full border-b bg-background sticky top-0 z-40">
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-bold text-lg">
           <TrafficCone className="h-6 w-6 text-primary" />
@@ -21,7 +21,7 @@ export function Header() {
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary flex items-center gap-1"
           >
             <Info className="h-4 w-4" />
-            Traffic Info
+            About
           </Link>
         </nav>
 
@@ -51,7 +51,7 @@ export function Header() {
                   </Link>
                   <Link href="/info" className="flex items-center gap-2 text-muted-foreground hover:text-primary">
                     <Info className="h-5 w-5" />
-                    Traffic Info
+                    About
                   </Link>
                 </nav>
               </div>

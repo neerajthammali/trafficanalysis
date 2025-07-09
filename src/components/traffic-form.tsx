@@ -38,7 +38,7 @@ export function TrafficDetailsForm({ form, onSubmit, isLoading }: TrafficDetails
     <Card className="shadow-lg sticky top-8">
       <CardHeader>
         <CardTitle className="font-headline text-2xl">Enter Observations</CardTitle>
-        <CardDescription>Rate the following factors based on your observation.</CardDescription>
+        <CardDescription>Rate the following factors based on your observation to generate the analysis.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -56,14 +56,14 @@ export function TrafficDetailsForm({ form, onSubmit, isLoading }: TrafficDetails
                             <RadioGroup
                                 onValueChange={renderField.onChange}
                                 defaultValue={renderField.value}
-                                className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2"
+                                className="grid grid-cols-2 gap-x-4 gap-y-2"
                             >
                                 {field.options.map(option => (
                                     <FormItem key={option} className="flex items-center space-x-2 space-y-0">
                                         <FormControl>
                                             <RadioGroupItem value={option} id={`${field.name}-${option}`} />
                                         </FormControl>
-                                        <FormLabel htmlFor={`${field.name}-${option}`} className="font-normal cursor-pointer">{option}</FormLabel>
+                                        <FormLabel htmlFor={`${field.name}-${option}`} className="font-normal cursor-pointer text-sm">{option}</FormLabel>
                                     </FormItem>
                                 ))}
                             </RadioGroup>

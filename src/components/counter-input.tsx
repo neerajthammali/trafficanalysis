@@ -16,10 +16,20 @@ export function CounterInput({ value, onChange }: CounterInputProps) {
     const decrement = () => onChange(Math.max(0, safeValue - 1));
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const num = parseInt(e.target.value, 10);
-        if (!isNaN(num) && num >= 0) {
-            onChange(num);
-        } else if (e.target.value === '') {
+        const value = e.target.value;
+        // Allow empty string to clear the input, otherwise parse to number
+        if (value === '') {
+            onChange(0);
+        } else {
+            const num = parseInt(value.replace(/[^0-9]/g, ''), 10);
+            if (!isNaN(num) && num >= 0) {
+                onChange(num);
+            }
+        }
+    };
+    
+    const handleBlur = () => {
+        if (safeValue === 0 || isNaN(safeValue)) {
             onChange(0);
         }
     };
@@ -39,14 +49,10 @@ export function CounterInput({ value, onChange }: CounterInputProps) {
             </Button>
             <Input
                 type="text"
-                className="w-16 text-center font-bold text-lg"
+                className="w-16 text-center font-bold text-lg [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 value={safeValue}
                 onChange={handleChange}
-                onBlur={(e) => {
-                  if (e.target.value === '') {
-                    onChange(0);
-                  }
-                }}
+                onBlur={handleBlur}
                 inputMode="numeric"
                 pattern="[0-9]*"
             />
