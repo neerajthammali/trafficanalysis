@@ -10,9 +10,7 @@ import { TrafficDetailsForm } from '@/components/traffic-form';
 import { TrafficAnalysis } from '@/components/traffic-analysis';
 import { TrafficDataTable } from '@/components/traffic-data-table';
 import { useToast } from "@/hooks/use-toast";
-import { TrafficInfo } from '@/components/traffic-info';
 import { Faq } from '@/components/faq';
-import { Footer } from '@/components/footer';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { TrafficChart } from '@/components/traffic-chart';
 import { CounterInput } from '@/components/counter-input';
@@ -28,7 +26,7 @@ const vehicleTypes = [
   { name: 'heavyVehicles', label: 'Heavy Vehicles', icon: Truck },
 ] as const;
 
-function Header() {
+function PageHeader() {
   return (
     <header className="mb-12 text-center">
       <h1 className="font-headline text-4xl font-bold text-primary sm:text-5xl lg:text-6xl">
@@ -309,17 +307,13 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-grow container mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <Header />
-        {renderContent()}
+    <main className="flex-grow container mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <PageHeader />
+      {renderContent()}
 
-        <div className="mt-16 space-y-8">
-          <TrafficInfo />
-          <Faq />
-        </div>
-      </main>
-      <Footer />
-    </div>
+      <div className="mt-16 space-y-8">
+        <Faq />
+      </div>
+    </main>
   );
 }
