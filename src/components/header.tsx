@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { TrafficCone, Info, Clock, Menu } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export function Header() {
@@ -79,18 +79,26 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right">
-              <div className="flex h-full flex-col">
-                <nav className="grid gap-6 text-lg font-medium mt-8">
-                  <Link href="/" className="flex items-center gap-2 font-bold">
+              <SheetHeader>
+                <SheetTitle>
+                  <Link href="/" className="flex items-center gap-2">
                     <TrafficCone className="h-6 w-6 text-primary" />
-                    <span>Calculator</span>
+                    <span>Traffic Calculator</span>
+                  </Link>
+                </SheetTitle>
+              </SheetHeader>
+              <div className="mt-4 flex h-full flex-col">
+                <nav className="grid gap-4 text-base font-medium">
+                  <Link href="/" className="flex items-center gap-2 text-muted-foreground hover:text-primary">
+                    <TrafficCone className="h-5 w-5" />
+                    Calculator
                   </Link>
                   <Link href="/info" className="flex items-center gap-2 text-muted-foreground hover:text-primary">
                     <Info className="h-5 w-5" />
                     Traffic Info
                   </Link>
                 </nav>
-                <div className="mt-auto pb-4">
+                <div className="mt-auto">
                   <PeakHoursDisplay />
                 </div>
               </div>
