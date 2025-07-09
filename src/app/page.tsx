@@ -68,6 +68,7 @@ export default function Home() {
         wrongDirection: 'Less',
         locality: 'Mixed-use',
         congestionCause: 'Peak Hour Rush',
+        remarks: '',
     }
   });
 
@@ -170,8 +171,8 @@ export default function Home() {
 
         let yPos = 35;
 
-        doc.addImage(chartImage, 'PNG', 15, yPos, 180, 90);
-        yPos += 100;
+        doc.addImage(chartImage, 'PNG', 15, yPos, 180, 100);
+        yPos += 110;
 
         doc.setFontSize(16);
         doc.setFont('helvetica', 'bold');
@@ -212,7 +213,7 @@ export default function Home() {
 
             (doc as any).autoTable({
                 startY: yPos,
-                head: [['Interval', '2W', '3W', '4W', 'Heavy', 'Jams', 'Delays', 'Wrong Dir.', 'Locality', 'Cause']],
+                head: [['Interval', '2W', '3W', '4W', 'Heavy', 'Jams', 'Delays', 'Wrong Dir.', 'Locality', 'Cause', 'Remarks']],
                 body: recordedData.map(entry => [
                     entry.timeInterval,
                     entry.twoWheelers,
@@ -223,7 +224,8 @@ export default function Home() {
                     entry.delays,
                     entry.wrongDirection,
                     entry.locality,
-                    entry.congestionCause
+                    entry.congestionCause,
+                    entry.remarks || 'N/A'
                 ]),
                 theme: 'grid',
                 headStyles: { fillColor: [22, 160, 133] },

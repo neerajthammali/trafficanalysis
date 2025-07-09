@@ -2,9 +2,14 @@
 
 import Link from 'next/link';
 import { Copyright } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export function Footer() {
-  const currentYear = new Date().getFullYear();
+  const [currentYear, setCurrentYear] = useState<number>();
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
 
   return (
     <footer className="border-t py-8 bg-background">
