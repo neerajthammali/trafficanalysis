@@ -12,6 +12,9 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const RatingEnum = z.enum(['Less', 'Moderate', 'Normal', 'High']);
+const LocalityEnum = z.enum(['Residential', 'Commercial', 'Industrial', 'Mixed-use']);
+const CongestionCauseEnum = z.enum(['Peak Hour Rush', 'Road Work', 'Accident', 'Special Event', 'None']);
+
 
 const AnalyzeTrafficDataInputSchema = z.object({
   twoWheelers: z.number().describe('Number of two-wheeled vehicles.'),
@@ -25,6 +28,8 @@ const AnalyzeTrafficDataInputSchema = z.object({
   delays: RatingEnum.describe('The rated level of traffic delays.'),
   signals: RatingEnum.describe('The rated level of issues with traffic signals.'),
   wrongDirection: RatingEnum.describe('The rated level of vehicles traveling in the wrong direction.'),
+  locality: LocalityEnum.describe('The type of road locality.'),
+  congestionCause: CongestionCauseEnum.describe('The primary cause of congestion.'),
 });
 export type AnalyzeTrafficDataInput = z.infer<typeof AnalyzeTrafficDataInputSchema>;
 
@@ -50,7 +55,7 @@ Here's what we saw:
 - Cars, cars, cars! ({{{fourWheelers}}})
 - Big trucks rolling through. ({{{heavyVehicles}}})
 
-This was for {{{timeInterval}}} during {{{trafficTime}}}.
+This was for {{{timeInterval}}} during {{{trafficTime}}} in a {{{locality}}} area.
 
 And here's what it felt like:
 - People walking around: {{{humanFlow}}}
@@ -58,6 +63,7 @@ And here's what it felt like:
 - Waiting and delays: {{{delays}}}
 - Traffic lights helping (or not!): {{{signals}}}
 - Oops! Cars going the wrong way: {{{wrongDirection}}}
+- Main reason for traffic trouble: {{{congestionCause}}}
 
 Now, tell me two things in simple words. Each response should be between 50 and 150 words.
 1.  **Conclusion:** What's the main traffic story? Is it super busy? Which vehicle is the king of the road right now? Keep it short and snappy!

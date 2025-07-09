@@ -14,6 +14,8 @@ export async function getTrafficInsights(data: TrafficData) {
     delays: data.delays,
     signals: data.signals,
     wrongDirection: data.wrongDirection,
+    locality: data.locality,
+    congestionCause: data.congestionCause,
   });
 
   return {

@@ -11,6 +11,8 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const RatingEnum = z.enum(['Less', 'Moderate', 'Normal', 'High']);
+const LocalityEnum = z.enum(['Residential', 'Commercial', 'Industrial', 'Mixed-use']);
+const CongestionCauseEnum = z.enum(['Peak Hour Rush', 'Road Work', 'Accident', 'Special Event', 'None']);
 
 const SuggestTrafficImprovementsInputSchema = z.object({
   trafficAnalysis: z
@@ -21,6 +23,8 @@ const SuggestTrafficImprovementsInputSchema = z.object({
   delays: RatingEnum.describe('The rated level of traffic delays experienced.'),
   signals: RatingEnum.describe('The rated level of issues with traffic signals in the area.'),
   wrongDirection: RatingEnum.describe('The rated level of vehicles traveling in the wrong direction.'),
+  locality: LocalityEnum.describe('The type of road locality.'),
+  congestionCause: CongestionCauseEnum.describe('The primary cause of congestion.'),
 });
 export type SuggestTrafficImprovementsInput = z.infer<
   typeof SuggestTrafficImprovementsInputSchema
@@ -48,6 +52,7 @@ const prompt = ai.definePrompt({
   prompt: `You're a super city planner! Your job is to make traffic better for everyone. Use simple words and short ideas. The entire response should be between 50 and 150 words.
 
 Here's the situation: {{{trafficAnalysis}}}
+This is in a {{{locality}}} area.
 
 And here are the trouble spots:
 - People traffic: {{{humanFlow}}}
@@ -55,10 +60,11 @@ And here are the trouble spots:
 - Annoying Delays: {{{delays}}}
 - Mixed-up Signals: {{{signals}}}
 - Wrong Way Drivers: {{{wrongDirection}}}
+- Main Cause: {{{congestionCause}}}
 
 Based on this, give some cool ideas to fix things for the future!
 Make your suggestions a simple, scannable list.
-If 'humanFlow' is high, maybe suggest a skywalk. If 'jams' are high, maybe suggest making the road bigger. Be direct and use easy-to-read language.`,
+If 'humanFlow' is high, maybe suggest a skywalk. If 'jams' are high, maybe suggest making the road bigger. If 'congestionCause' is 'Road Work', suggest better planning for construction. If 'locality' is 'Commercial', suggest better parking. Be direct and use easy-to-read language.`,
 });
 
 const suggestTrafficImprovementsFlow = ai.defineFlow(

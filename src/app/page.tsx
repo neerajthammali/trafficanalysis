@@ -186,10 +186,10 @@ export default function Home() {
     
     autoTable(doc, {
       startY: yPos,
-      head: [['2-Wheel', '3-Wheel', '4-Wheel', 'Heavy', 'Jams', 'Delays', 'Wrong Dir.']],
+      head: [['2-Wheel', '3-Wheel', '4-Wheel', 'Heavy', 'Jams', 'Delays', 'Wrong Dir.', 'Locality', 'Cause']],
       body: recordedData.map(entry => [
         entry.twoWheelers, entry.threeWheelers, entry.fourWheelers, entry.heavyVehicles,
-        entry.jams, entry.delays, entry.wrongDirection
+        entry.jams, entry.delays, entry.wrongDirection, entry.locality, entry.congestionCause,
       ]),
       headStyles: { fillColor: 'hsl(var(--primary))' },
     });

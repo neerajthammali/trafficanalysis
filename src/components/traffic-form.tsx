@@ -21,15 +21,15 @@ interface TrafficDetailsFormProps {
   isLoading: boolean;
 }
 
-const detailFields: {name: keyof TrafficDetailsData, label: string}[] = [
-    { name: 'humanFlow', label: 'Human Flow' },
-    { name: 'jams', label: 'Traffic Jams' },
-    { name: 'delays', label: 'Travel Delays' },
-    { name: 'signals', label: 'Signal Effectiveness' },
-    { name: 'wrongDirection', label: 'Wrong Direction Driving' },
+const detailFields: {name: keyof TrafficDetailsData, label: string, options: readonly string[]}[] = [
+    { name: 'humanFlow', label: 'Human Flow', options: ['Less', 'Moderate', 'Normal', 'High'] },
+    { name: 'jams', label: 'Traffic Jams', options: ['Less', 'Moderate', 'Normal', 'High'] },
+    { name: 'delays', label: 'Travel Delays', options: ['Less', 'Moderate', 'Normal', 'High'] },
+    { name: 'signals', label: 'Signal Effectiveness', options: ['Less', 'Moderate', 'Normal', 'High'] },
+    { name: 'wrongDirection', label: 'Wrong Direction Driving', options: ['Less', 'Moderate', 'Normal', 'High'] },
+    { name: 'locality', label: 'Road Locality', options: ['Residential', 'Commercial', 'Industrial', 'Mixed-use'] },
+    { name: 'congestionCause', label: 'Primary Cause of Congestion', options: ['Peak Hour Rush', 'Road Work', 'Accident', 'Special Event', 'None'] },
 ]
-
-const ratingOptions = ['Less', 'Moderate', 'Normal', 'High'];
 
 export function TrafficDetailsForm({ form, onSubmit, isLoading }: TrafficDetailsFormProps) {
   return (
@@ -56,7 +56,7 @@ export function TrafficDetailsForm({ form, onSubmit, isLoading }: TrafficDetails
                                 defaultValue={renderField.value}
                                 className="grid grid-cols-2 gap-x-4 gap-y-2"
                             >
-                                {ratingOptions.map(option => (
+                                {field.options.map(option => (
                                     <FormItem key={option} className="flex items-center space-x-2 space-y-0">
                                         <FormControl>
                                             <RadioGroupItem value={option} id={`${field.name}-${option}`} />

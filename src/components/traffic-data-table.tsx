@@ -56,6 +56,8 @@ export function TrafficDataTable({ data, onExportPDF, isExportDisabled }: Traffi
                     <TableHead>Jams</TableHead>
                     <TableHead>Delays</TableHead>
                     <TableHead>Wrong Dir.</TableHead>
+                    <TableHead>Locality</TableHead>
+                    <TableHead>Cause</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -69,6 +71,8 @@ export function TrafficDataTable({ data, onExportPDF, isExportDisabled }: Traffi
                         <TableCell><Badge variant={getBadgeVariant(entry.jams)}>{entry.jams}</Badge></TableCell>
                         <TableCell><Badge variant={getBadgeVariant(entry.delays)}>{entry.delays}</Badge></TableCell>
                         <TableCell><Badge variant={getBadgeVariant(entry.wrongDirection)}>{entry.wrongDirection}</Badge></TableCell>
+                        <TableCell><Badge variant="outline">{entry.locality}</Badge></TableCell>
+                        <TableCell><Badge variant="outline">{entry.congestionCause}</Badge></TableCell>
                     </TableRow>
                     ))}
                 </TableBody>
