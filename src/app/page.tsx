@@ -11,6 +11,7 @@ import { TrafficAnalysis } from '@/components/traffic-analysis';
 import { TrafficDataTable } from '@/components/traffic-data-table';
 import { useToast } from "@/hooks/use-toast";
 import { TrafficInfo } from '@/components/traffic-info';
+import { Faq } from '@/components/faq';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { TrafficChart } from '@/components/traffic-chart';
 import { CounterInput } from '@/components/counter-input';
@@ -311,8 +312,9 @@ export default function Home() {
       <Header />
       {renderContent()}
       {(surveyStep === 'complete') && (
-        <div className="mt-12">
+        <div className="mt-12 space-y-8">
           <TrafficInfo />
+          <Faq />
         </div>
       )}
     </main>
