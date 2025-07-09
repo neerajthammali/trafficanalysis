@@ -1,9 +1,7 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import type { TrafficData } from '@/lib/types';
-import { TrafficDataSchema } from '@/lib/types';
+import type { TrafficDetailsData } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -21,138 +19,61 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { Bike, Car, CarFront, LoaderCircle, Truck, Ban } from 'lucide-react';
-import { CounterInput } from './counter-input';
+import { LoaderCircle } from 'lucide-react';
 
-interface TrafficFormProps {
-  onSubmit: (data: TrafficData) => void;
+interface TrafficDetailsFormProps {
+  onSubmit: (e: React.FormEvent) => void;
   isLoading: boolean;
 }
 
-const vehicleTypes = [
-  { name: 'twoWheelers', label: '2-Wheelers', icon: Bike },
-  { name: 'threeWheelers', label: '3-Wheelers', icon: CarFront },
-  { name: 'fourWheelers', label: '4-Wheelers', icon: Car },
-  { name: 'heavyVehicles', label: 'Heavy Vehicles', icon: Truck },
-] as const;
+const detailFields: {name: keyof TrafficDetailsData, label: string}[] = [
+    { name: 'humanFlow', label: 'Human Flow' },
+    { name: 'jams', label: 'Traffic Jams' },
+    { name: 'delays', label: 'Travel Delays' },
+    { name: 'signals', label: 'Signal Effectiveness' },
+    { name: 'wrongDirection', label: 'Wrong Direction Driving' },
+]
 
+const ratingOptions = ['Less', 'Moderate', 'Normal', 'High'];
 
-export function TrafficForm({ onSubmit, isLoading }: TrafficFormProps) {
-  const form = useForm<TrafficData>({
-    resolver: zodResolver(TrafficDataSchema),
-    defaultValues: {
-      twoWheelers: 0,
-      threeWheelers: 0,
-      fourWheelers: 0,
-      heavyVehicles: 0,
-      humanFlow: '',
-      jams: '',
-      delays: '',
-      signals: '',
-      wrongDirection: '',
-    },
-  });
+export function TrafficDetailsForm({ onSubmit, isLoading }: TrafficDetailsFormProps) {
+  const form = useForm<TrafficDetailsData>();
 
   return (
-    <Card className="shadow-lg">
+    <Card className="shadow-lg sticky top-8">
       <CardHeader>
-        <CardTitle className="font-headline text-2xl">Record Traffic Data</CardTitle>
-        <CardDescription>Enter the counts and observations for the current interval.</CardDescription>
+        <CardTitle className="font-headline text-2xl">Enter Observations</CardTitle>
+        <CardDescription>Rate the following factors based on your observation.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="space-y-4 rounded-lg border p-4">
-              <h3 className="text-lg font-medium">Vehicle Counts</h3>
-              {vehicleTypes.map((vehicle) => (
+          <form onSubmit={onSubmit} className="space-y-6">
+            
+            {detailFields.map(field => (
                 <FormField
-                  key={vehicle.name}
-                  control={form.control}
-                  name={vehicle.name}
-                  render={({ field }) => (
+                    key={field.name}
+                    control={form.control}
+                    name={field.name}
+                    render={({ field: renderField }) => (
                     <FormItem>
-                      <div className="flex items-center justify-between">
-                        <FormLabel className="flex items-center gap-2 font-medium">
-                          <vehicle.icon className="h-5 w-5 text-primary" />
-                          {vehicle.label}
-                        </FormLabel>
+                        <FormLabel>{field.label}</FormLabel>
+                        <Select onValueChange={renderField.onChange} defaultValue={renderField.value}>
                         <FormControl>
-                          <CounterInput value={field.value} onChange={field.onChange} />
+                            <SelectTrigger>
+                            <SelectValue placeholder="Select rating" />
+                            </SelectTrigger>
                         </FormControl>
-                      </div>
-                      <FormMessage className="text-right" />
+                        <SelectContent>
+                            {ratingOptions.map(option => (
+                                <SelectItem key={option} value={option}>{option}</SelectItem>
+                            ))}
+                        </SelectContent>
+                        </Select>
+                        <FormMessage />
                     </FormItem>
-                  )}
+                    )}
                 />
-              ))}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="timeInterval"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Time Interval</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select interval" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="30 mins">30 mins</SelectItem>
-                        <SelectItem value="1 hour">1 hour</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="trafficTime"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Traffic Time</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select time type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="Normal Time">Normal Time</SelectItem>
-                        <SelectItem value="Peak Time">Peak Time</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="space-y-4">
-                <FormField control={form.control} name="humanFlow" render={({ field }) => (
-                    <FormItem><FormLabel>Human Flow</FormLabel><FormControl><Textarea placeholder="e.g., High pedestrian traffic on sidewalks..." {...field} /></FormControl><FormMessage /></FormItem>
-                )}/>
-                <FormField control={form.control} name="jams" render={({ field }) => (
-                    <FormItem><FormLabel>Jams</FormLabel><FormControl><Textarea placeholder="e.g., Frequent bottleneck near the intersection..." {...field} /></FormControl><FormMessage /></FormItem>
-                )}/>
-                <FormField control={form.control} name="delays" render={({ field }) => (
-                    <FormItem><FormLabel>Delays</FormLabel><FormControl><Textarea placeholder="e.g., Average delay of 5 minutes..." {...field} /></FormControl><FormMessage /></FormItem>
-                )}/>
-                <FormField control={form.control} name="signals" render={({ field }) => (
-                    <FormItem><FormLabel>Signals</FormLabel><FormControl><Textarea placeholder="e.g., Signal timing seems short for peak hours..." {...field} /></FormControl><FormMessage /></FormItem>
-                )}/>
-                <FormField control={form.control} name="wrongDirection" render={({ field }) => (
-                    <FormItem><FormLabel className="flex items-center gap-2">
-                      <Ban className="h-4 w-4" />
-                      Wrong Direction Driving
-                      </FormLabel><FormControl><Textarea placeholder="e.g., Motorbikes frequently drive on the wrong side..." {...field} /></FormControl><FormMessage /></FormItem>
-                )}/>
-            </div>
+            ))}
 
             <Button type="submit" disabled={isLoading} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
               {isLoading ? (
@@ -161,7 +82,7 @@ export function TrafficForm({ onSubmit, isLoading }: TrafficFormProps) {
                   Analyzing...
                 </>
               ) : (
-                'Record & Analyze'
+                'Generate Analysis'
               )}
             </Button>
           </form>

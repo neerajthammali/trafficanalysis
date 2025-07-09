@@ -11,18 +11,20 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
+const RatingEnum = z.enum(['Less', 'Moderate', 'Normal', 'High']);
+
 const AnalyzeTrafficDataInputSchema = z.object({
   twoWheelers: z.number().describe('Number of two-wheeled vehicles.'),
   threeWheelers: z.number().describe('Number of three-wheeled vehicles.'),
   fourWheelers: z.number().describe('Number of four-wheeled vehicles.'),
   heavyVehicles: z.number().describe('Number of heavy vehicles.'),
-  timeInterval: z.string().describe('The time interval for the data (e.g., 1 hour, 30 mins).'),
+  timeInterval: z.string().describe('The time interval for the data (e.g., 15 minutes).'),
   trafficTime: z.string().describe('The time of day for the traffic data (e.g., peak time, normal time).'),
-  humanFlow: z.string().describe('Information about human flow.'),
-  jams: z.string().describe('Information about traffic jams.'),
-  delays: z.string().describe('Information about traffic delays.'),
-  signals: z.string().describe('Information about traffic signals.'),
-  wrongDirection: z.string().describe('Information about vehicles traveling in the wrong direction.'),
+  humanFlow: RatingEnum.describe('The rated level of human flow.'),
+  jams: RatingEnum.describe('The rated level of traffic jams.'),
+  delays: RatingEnum.describe('The rated level of traffic delays.'),
+  signals: RatingEnum.describe('The rated level of issues with traffic signals.'),
+  wrongDirection: RatingEnum.describe('The rated level of vehicles traveling in the wrong direction.'),
 });
 export type AnalyzeTrafficDataInput = z.infer<typeof AnalyzeTrafficDataInputSchema>;
 
@@ -51,7 +53,7 @@ Vehicle Counts:
 Time Interval: {{{timeInterval}}}
 Traffic Time: {{{trafficTime}}}
 
-Additional Information:
+Observer Ratings:
 - Human flow: {{{humanFlow}}}
 - Jams: {{{jams}}}
 - Delays: {{{delays}}}
@@ -59,8 +61,8 @@ Additional Information:
 - Wrong Direction Driving: {{{wrongDirection}}}
 
 Based on this data, provide:
-1. A short conclusion about the traffic flow, congestion level, and key issues.
-2. A list of safety precautions that should be taken immediately to mitigate risks identified.`,
+1. A short conclusion about the traffic flow, congestion level, and key issues, identifying which vehicle type is dominant.
+2. A list of safety precautions that should be taken immediately to mitigate risks identified from the ratings.`,
 });
 
 const analyzeTrafficDataFlow = ai.defineFlow(

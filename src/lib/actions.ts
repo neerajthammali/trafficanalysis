@@ -6,6 +6,7 @@ import type { TrafficData } from '@/lib/types';
 
 export async function getTrafficInsights(data: TrafficData) {
   const analysisResult = await analyzeTrafficData(data);
+  
   const improvementSuggestions = await suggestTrafficImprovements({
     trafficAnalysis: analysisResult.conclusion,
     humanFlow: data.humanFlow,
