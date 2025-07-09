@@ -54,7 +54,7 @@ export function TrafficDetailsForm({ form, onSubmit, isLoading }: TrafficDetails
                             <RadioGroup
                                 onValueChange={renderField.onChange}
                                 defaultValue={renderField.value}
-                                className="grid grid-cols-2 gap-x-4 gap-y-2"
+                                className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2"
                             >
                                 {field.options.map(option => (
                                     <FormItem key={option} className="flex items-center space-x-2 space-y-0">

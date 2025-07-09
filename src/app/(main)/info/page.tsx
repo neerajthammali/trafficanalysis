@@ -16,7 +16,10 @@ export default function InfoPage() {
             <article className="prose prose-lg dark:prose-invert max-w-4xl mx-auto">
                 <h2>Why I Built This</h2>
                 <p>
-                    For my college project, I had to learn all about "Traffic Volume Analysis and Road Improvement Strategies." Sounds super serious, right? Well, I wanted to make it fun! So, I decided to build this little app. My big idea was to create something that wasn't boring, but was super easy for anyone to use to count cars and see how traffic really works. It’s like a video game, but for real roads!
+                    For my college project, I had to learn all about "Traffic Volume Analysis and Road Improvement Strategies." Sounds super serious, right? Well, I wanted to make it fun!
+                </p>
+                <p>
+                    So, I decided to build this little app. My big idea was to create something that wasn't boring, but was super easy for anyone to use to count cars and see how traffic really works. It’s like a video game, but for real roads!
                 </p>
 
                 <h2>What's The Big Idea?</h2>
