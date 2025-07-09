@@ -11,13 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { LoaderCircle } from 'lucide-react';
 
@@ -46,7 +40,7 @@ export function TrafficDetailsForm({ form, onSubmit, isLoading }: TrafficDetails
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             
             {detailFields.map(field => (
                 <FormField
@@ -54,20 +48,24 @@ export function TrafficDetailsForm({ form, onSubmit, isLoading }: TrafficDetails
                     control={form.control}
                     name={field.name}
                     render={({ field: renderField }) => (
-                    <FormItem>
-                        <FormLabel>{field.label}</FormLabel>
-                        <Select onValueChange={renderField.onChange} defaultValue={renderField.value}>
+                    <FormItem className="space-y-3">
+                        <FormLabel className="font-semibold">{field.label}</FormLabel>
                         <FormControl>
-                            <SelectTrigger>
-                            <SelectValue placeholder="Select rating" />
-                            </SelectTrigger>
+                            <RadioGroup
+                                onValueChange={renderField.onChange}
+                                defaultValue={renderField.value}
+                                className="grid grid-cols-2 gap-x-4 gap-y-2"
+                            >
+                                {ratingOptions.map(option => (
+                                    <FormItem key={option} className="flex items-center space-x-2 space-y-0">
+                                        <FormControl>
+                                            <RadioGroupItem value={option} id={`${field.name}-${option}`} />
+                                        </FormControl>
+                                        <FormLabel htmlFor={`${field.name}-${option}`} className="font-normal cursor-pointer">{option}</FormLabel>
+                                    </FormItem>
+                                ))}
+                            </RadioGroup>
                         </FormControl>
-                        <SelectContent>
-                            {ratingOptions.map(option => (
-                                <SelectItem key={option} value={option}>{option}</SelectItem>
-                            ))}
-                        </SelectContent>
-                        </Select>
                         <FormMessage />
                     </FormItem>
                     )}
