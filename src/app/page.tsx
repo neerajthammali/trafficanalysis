@@ -17,7 +17,7 @@ import { CounterInput } from '@/components/counter-input';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Bike, Car, CarFront, Users, Truck, Timer, Play, Redo, LoaderCircle, Download, Share2 } from 'lucide-react';
+import { Bike, Car, CarFront, Users, Truck, Timer, Play, Redo, LoaderCircle, Share2 } from 'lucide-react';
 
 const vehicleTypes = [
   { name: 'twoWheelers', label: '2-Wheelers', icon: Bike },
@@ -142,68 +142,6 @@ export default function Home() {
     setAnalysisResult(null);
     form.reset();
   }
-  
-  const handleExportPDF = async () => {
-    if (!analysisResult || recordedData.length === 0) {
-      toast({ variant: 'destructive', title: 'No Data to Export' });
-      return;
-    }
-
-    const { default: jsPDF } = await import('jspdf');
-    const { default: autoTable } = await import('jspdf-autotable');
-    const { toPng } = await import('html-to-image');
-
-    const doc = new jsPDF();
-    let yPos = 22;
-
-    doc.setFontSize(20);
-    doc.text('Traffic Analysis Report', 14, yPos);
-    yPos += 15;
-    
-    if (chartRef.current) {
-        try {
-            const dataUrl = await toPng(chartRef.current, { cacheBust: true });
-            doc.setFontSize(16);
-            doc.text('Vehicle Distribution', 14, yPos);
-            yPos += 8;
-            doc.addImage(dataUrl, 'PNG', 14, yPos, 180, 100);
-            yPos += 110;
-        } catch (error) {
-            console.error('oops, something went wrong!', error);
-        }
-    }
-
-
-    doc.setFontSize(16);
-    doc.text('AI-Powered Analysis & Precautions', 14, yPos);
-    yPos += 8;
-    doc.setFontSize(11);
-    const analysisLines = doc.splitTextToSize(
-      `Conclusion: ${analysisResult.analysis.conclusion}\n\nPrecautions: ${analysisResult.analysis.precautions}`, 180
-    );
-    doc.text(analysisLines, 14, yPos);
-    yPos += analysisLines.length * 5 + 10;
-
-    doc.setFontSize(16);
-    doc.text('Development Suggestions', 14, yPos);
-    yPos += 8;
-    doc.setFontSize(11);
-    const improvementLines = doc.splitTextToSize(analysisResult.improvements.suggestions, 180);
-    doc.text(improvementLines, 14, yPos);
-    yPos += improvementLines.length * 5 + 10;
-    
-    autoTable(doc, {
-      startY: yPos,
-      head: [['2-Wheel', '3-Wheel', '4-Wheel', 'Heavy', 'Jams', 'Delays', 'Wrong Dir.', 'Locality', 'Cause']],
-      body: recordedData.map(entry => [
-        entry.twoWheelers, entry.threeWheelers, entry.fourWheelers, entry.heavyVehicles,
-        entry.jams, entry.delays, entry.wrongDirection, entry.locality, entry.congestionCause,
-      ]),
-      headStyles: { fillColor: 'hsl(var(--primary))' },
-    });
-
-    doc.save('traffic-report.pdf');
-  };
 
   const handleShareImage = async () => {
     if (!reportSectionRef.current) {
@@ -353,12 +291,11 @@ export default function Home() {
                 <CardContent className="p-4 flex flex-col sm:flex-row items-center justify-center gap-4">
                      <div className="text-center sm:text-left flex-1">
                         <h3 className="text-lg font-semibold">Survey Complete!</h3>
-                        <p className="text-sm text-muted-foreground">Your report is ready below. You can start a new survey or export your results.</p>
+                        <p className="text-sm text-muted-foreground">Your report is ready below. You can start a new survey or share your results.</p>
                      </div>
                      <div className="flex flex-wrap items-center justify-center gap-2">
                         <Button onClick={handleReset} variant="outline" className="w-full sm:w-auto"><Redo className="mr-2" /> New Survey</Button>
-                        <Button onClick={handleExportPDF} disabled={!analysisResult || isLoading} className="w-full sm:w-auto"><Download className="mr-2" /> Export PDF</Button>
-                        <Button onClick={handleShareImage} disabled={!analysisResult || isLoading} className="w-full sm:w-auto">
+                        <Button onClick={handleShareImage} disabled={!analysisResult || isLoading} className="w-full sm:w-auto bg-accent hover:bg-accent/90">
                             {isLoading ? <LoaderCircle className="mr-2 animate-spin" /> : <Share2 className="mr-2" />}
                             Share Image
                         </Button>
