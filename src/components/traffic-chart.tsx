@@ -1,10 +1,10 @@
 'use client';
 
-import { PieChart as RechartsPieChart, Pie, Cell, Tooltip } from 'recharts';
+import { BarChart as RechartsBarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ChartContainer, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { VehicleChartData } from '@/lib/types';
-import { PieChart as PieChartIcon } from 'lucide-react';
+import { BarChart2 as BarChartIcon } from 'lucide-react';
 
 interface TrafficChartProps {
   data: VehicleChartData[];
@@ -21,7 +21,7 @@ export function TrafficChart({ data }: TrafficChartProps) {
           <CardDescription>Awaiting vehicle counts.</CardDescription>
         </CardHeader>
         <CardContent className="flex items-center justify-center h-48 text-muted-foreground">
-            <PieChartIcon className="h-8 w-8 mr-2" />
+            <BarChartIcon className="h-8 w-8 mr-2" />
             <span>No chart to display</span>
         </CardContent>
       </Card>
@@ -40,36 +40,39 @@ export function TrafficChart({ data }: TrafficChartProps) {
         <CardDescription>Distribution of vehicle types in the recorded period.</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="mx-auto aspect-square h-[250px]">
-          <RechartsPieChart>
-            <Tooltip content={<ChartTooltipContent hideLabel />} />
-            <Pie
-              data={data}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={80}
-              labelLine={false}
-              label={({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
-                const RADIAN = Math.PI / 180;
-                const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-                const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                const y = cy + radius * Math.sin(-midAngle * RADIAN);
-                return (percent * 100) > 5 ? (
-                  <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-                    {`${(percent * 100).toFixed(0)}%`}
-                  </text>
-                ) : null;
-              }}
-            >
-              {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.fill} />
+        <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
+          <RechartsBarChart data={data} accessibilityLayer>
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="name"
+              tickLine={false}
+              tickMargin={10}
+              axisLine={false}
+              tick={{ fontSize: 12 }}
+            />
+            <YAxis />
+            <Tooltip
+              cursor={{ fill: "hsl(var(--muted))" }}
+              content={<ChartTooltipContent hideLabel />}
+            />
+            <Bar dataKey="value" radius={4}>
+              {data.map((entry) => (
+                <Cell key={`cell-${entry.name}`} fill={entry.fill} />
               ))}
-            </Pie>
-            <ChartLegend content={<ChartLegendContent nameKey="name" />} />
-          </RechartsPieChart>
+            </Bar>
+          </RechartsBarChart>
         </ChartContainer>
+        <div className="flex items-center justify-center gap-x-4 gap-y-2 flex-wrap pt-4">
+          {data.map((item) => (
+            <div key={item.name} className="flex items-center gap-1.5">
+              <div
+                className="h-3 w-3 shrink-0 rounded-sm"
+                style={{ backgroundColor: item.fill }}
+              />
+              <span className="text-sm text-muted-foreground">{item.name}</span>
+            </div>
+          ))}
+        </div>
       </CardContent>
     </Card>
   );
