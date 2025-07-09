@@ -29,8 +29,8 @@ const AnalyzeTrafficDataInputSchema = z.object({
 export type AnalyzeTrafficDataInput = z.infer<typeof AnalyzeTrafficDataInputSchema>;
 
 const AnalyzeTrafficDataOutputSchema = z.object({
-  conclusion: z.string().describe('A short conclusion about the traffic flow, congestion level, and key issues.'),
-  precautions: z.string().describe('Precautions to be taken based on the analysis, focusing on immediate safety measures.'),
+  conclusion: z.string().describe('A short, snappy conclusion about the traffic flow. Easy to read!'),
+  precautions: z.string().describe('A simple, scannable list of safety tips.'),
 });
 export type AnalyzeTrafficDataOutput = z.infer<typeof AnalyzeTrafficDataOutputSchema>;
 
@@ -42,27 +42,26 @@ const analyzeTrafficDataPrompt = ai.definePrompt({
   name: 'analyzeTrafficDataPrompt',
   input: {schema: AnalyzeTrafficDataInputSchema},
   output: {schema: AnalyzeTrafficDataOutputSchema},
-  prompt: `You are an expert traffic analyst. Analyze the following traffic data:
+  prompt: `You're a friendly traffic helper! Let's look at the cars and people. Be fun and easy to understand. Use short sentences!
 
-Vehicle Counts:
-- Two-wheelers: {{{twoWheelers}}}
-- Three-wheelers: {{{threeWheelers}}}
-- Four-wheelers: {{{fourWheelers}}}
-- Heavy vehicles: {{{heavyVehicles}}}
+Here's what we saw:
+- Lots of two-wheelers! ({{{twoWheelers}}})
+- Three-wheelers zooming by. ({{{threeWheelers}}})
+- Cars, cars, cars! ({{{fourWheelers}}})
+- Big trucks rolling through. ({{{heavyVehicles}}})
 
-Time Interval: {{{timeInterval}}}
-Traffic Time: {{{trafficTime}}}
+This was for {{{timeInterval}}} during {{{trafficTime}}}.
 
-Observer Ratings:
-- Human flow: {{{humanFlow}}}
-- Jams: {{{jams}}}
-- Delays: {{{delays}}}
-- Signals: {{{signals}}}
-- Wrong Direction Driving: {{{wrongDirection}}}
+And here's what it felt like:
+- People walking around: {{{humanFlow}}}
+- Cars stuck in jams: {{{jams}}}
+- Waiting and delays: {{{delays}}}
+- Traffic lights helping (or not!): {{{signals}}}
+- Oops! Cars going the wrong way: {{{wrongDirection}}}
 
-Based on this data, provide:
-1. A short conclusion about the traffic flow, congestion level, and key issues, identifying which vehicle type is dominant.
-2. A list of safety precautions that should be taken immediately to mitigate risks identified from the ratings.`,
+Now, tell me two things in simple words:
+1.  **Conclusion:** What's the main traffic story? Is it super busy? Which vehicle is the king of the road right now? Keep it short and snappy!
+2.  **Precautions:** Quick safety tips! What should people watch out for right now? Use bullet points or a short list.`,
 });
 
 const analyzeTrafficDataFlow = ai.defineFlow(

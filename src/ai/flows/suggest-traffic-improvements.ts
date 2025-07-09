@@ -29,7 +29,7 @@ export type SuggestTrafficImprovementsInput = z.infer<
 const SuggestTrafficImprovementsOutputSchema = z.object({
   suggestions: z
     .string()
-    .describe('Suggestions for traffic improvements, such as lane and road adjustments. Base suggestions on the ratings provided; for example, if humanFlow is high, suggest skywalks or pedestrian bridges.'),
+    .describe('A simple, scannable list of cool ideas to improve traffic, like skywalks or wider roads. Fun and easy to read!'),
 });
 export type SuggestTrafficImprovementsOutput = z.infer<
   typeof SuggestTrafficImprovementsOutputSchema
@@ -45,14 +45,20 @@ const prompt = ai.definePrompt({
   name: 'suggestTrafficImprovementsPrompt',
   input: {schema: SuggestTrafficImprovementsInputSchema},
   output: {schema: SuggestTrafficImprovementsOutputSchema},
-  prompt: `You are an expert traffic planner. Based on the following information, suggest a list of specific infrastructure and policy development ideas to improve long-term traffic flow and safety. Include suggestions like new skywalks, road widening, signal optimization, enforcement changes, or other relevant solutions. Your suggestions should directly address the problems indicated by the ratings. For example, high ratings for 'humanFlow' and 'jams' might warrant a skywalk and intersection redesign.
+  prompt: `You're a super city planner! Your job is to make traffic better for everyone. Use simple words and short ideas.
 
-Traffic Analysis: {{{trafficAnalysis}}}
-Human Flow Rating: {{{humanFlow}}}
-Jams Rating: {{{jams}}}
-Delays Rating: {{{delays}}}
-Signals Rating: {{{signals}}}
-Wrong Direction Driving Rating: {{{wrongDirection}}}`,
+Here's the situation: {{{trafficAnalysis}}}
+
+And here are the trouble spots:
+- People traffic: {{{humanFlow}}}
+- Car Jams: {{{jams}}}
+- Annoying Delays: {{{delays}}}
+- Mixed-up Signals: {{{signals}}}
+- Wrong Way Drivers: {{{wrongDirection}}}
+
+Based on this, give some cool ideas to fix things for the future!
+Make your suggestions a simple, scannable list.
+If 'humanFlow' is high, maybe suggest a skywalk. If 'jams' are high, maybe suggest making the road bigger. Be direct and use easy-to-read language.`,
 });
 
 const suggestTrafficImprovementsFlow = ai.defineFlow(
