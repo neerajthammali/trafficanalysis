@@ -1,8 +1,8 @@
 'use client';
 
-import { PieChart as RechartsPieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import { PieChart as RechartsPieChart, Pie, Cell, Tooltip } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+import { ChartContainer, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
 import { VehicleChartData } from '@/lib/types';
 import { PieChart as PieChartIcon } from 'lucide-react';
 
@@ -40,7 +40,7 @@ export function TrafficChart({ data }: TrafficChartProps) {
         <CardDescription>Distribution of vehicle types in the recorded period.</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-48 w-full">
+        <ChartContainer config={chartConfig} className="mx-auto aspect-square h-[250px]">
           <RechartsPieChart>
             <Tooltip content={<ChartTooltipContent hideLabel />} />
             <Pie
@@ -67,7 +67,7 @@ export function TrafficChart({ data }: TrafficChartProps) {
                 <Cell key={`cell-${index}`} fill={entry.fill} />
               ))}
             </Pie>
-            <Legend content={() => <p className="text-sm text-center text-muted-foreground mt-2">Vehicle distribution by type.</p>} />
+            <ChartLegend content={<ChartLegendContent nameKey="name" />} />
           </RechartsPieChart>
         </ChartContainer>
       </CardContent>
