@@ -67,7 +67,7 @@ export function TrafficChart({ data }: TrafficChartProps) {
                 <Cell key={`cell-${index}`} fill={entry.fill} />
               ))}
             </Pie>
-            <Legend content={<p className="text-sm text-center text-muted-foreground mt-2">Vehicle distribution by type.</p>} />
+            <Legend content={() => <p className="text-sm text-center text-muted-foreground mt-2">Vehicle distribution by type.</p>} />
           </RechartsPieChart>
         </ChartContainer>
       </CardContent>
