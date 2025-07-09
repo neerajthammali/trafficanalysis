@@ -21,7 +21,7 @@ export function Footer() {
           <Copyright className="h-4 w-4" /> {currentYear} Traffic Calculator
         </p>
         <p className="text-xs mt-2">
-          Made with ❤️ by the Firebase Studio Team
+          Made with ❤️ by Neeraj Thammali
         </p>
       </div>
     </footer>
