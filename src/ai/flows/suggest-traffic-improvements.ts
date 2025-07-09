@@ -45,7 +45,7 @@ const prompt = ai.definePrompt({
   name: 'suggestTrafficImprovementsPrompt',
   input: {schema: SuggestTrafficImprovementsInputSchema},
   output: {schema: SuggestTrafficImprovementsOutputSchema},
-  prompt: `You're a super city planner! Your job is to make traffic better for everyone. Use simple words and short ideas.
+  prompt: `You're a super city planner! Your job is to make traffic better for everyone. Use simple words and short ideas. The entire response should be between 50 and 150 words.
 
 Here's the situation: {{{trafficAnalysis}}}
 

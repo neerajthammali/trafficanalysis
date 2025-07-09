@@ -59,7 +59,7 @@ And here's what it felt like:
 - Traffic lights helping (or not!): {{{signals}}}
 - Oops! Cars going the wrong way: {{{wrongDirection}}}
 
-Now, tell me two things in simple words:
+Now, tell me two things in simple words. Each response should be between 50 and 150 words.
 1.  **Conclusion:** What's the main traffic story? Is it super busy? Which vehicle is the king of the road right now? Keep it short and snappy!
 2.  **Precautions:** Quick safety tips! What should people watch out for right now? Use bullet points or a short list.`,
 });
