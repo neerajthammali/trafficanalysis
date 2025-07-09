@@ -268,7 +268,7 @@ export default function Home() {
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
               <div className="lg:col-span-2">
                 {surveyStep === 'details' ? (
-                  <TrafficDetailsForm onSubmit={form.handleSubmit(handleDetailsSubmit)} isLoading={isLoading} />
+                  <TrafficDetailsForm form={form} onSubmit={handleDetailsSubmit} isLoading={isLoading} />
                 ) : surveyStep === 'analyzing' || surveyStep === 'complete' ? (
                   <div className="flex flex-col gap-4 sticky top-8">
                     <Card>

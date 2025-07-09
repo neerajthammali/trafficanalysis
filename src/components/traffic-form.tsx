@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { type UseFormReturn } from 'react-hook-form';
 import type { TrafficDetailsData } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,7 +22,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { LoaderCircle } from 'lucide-react';
 
 interface TrafficDetailsFormProps {
-  onSubmit: (e: React.FormEvent) => void;
+  form: UseFormReturn<TrafficDetailsData>;
+  onSubmit: (data: TrafficDetailsData) => void;
   isLoading: boolean;
 }
 
@@ -36,9 +37,7 @@ const detailFields: {name: keyof TrafficDetailsData, label: string}[] = [
 
 const ratingOptions = ['Less', 'Moderate', 'Normal', 'High'];
 
-export function TrafficDetailsForm({ onSubmit, isLoading }: TrafficDetailsFormProps) {
-  const form = useForm<TrafficDetailsData>();
-
+export function TrafficDetailsForm({ form, onSubmit, isLoading }: TrafficDetailsFormProps) {
   return (
     <Card className="shadow-lg sticky top-8">
       <CardHeader>
@@ -47,7 +46,7 @@ export function TrafficDetailsForm({ onSubmit, isLoading }: TrafficDetailsFormPr
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={onSubmit} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             
             {detailFields.map(field => (
                 <FormField
