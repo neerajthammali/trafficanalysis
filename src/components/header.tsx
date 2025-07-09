@@ -1,52 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { TrafficCone, Info, Clock, Menu } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { TrafficCone, Info, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Skeleton } from '@/components/ui/skeleton';
 
 export function Header() {
-  const [isPeak, setIsPeak] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-    const checkPeakTime = () => {
-      const now = new Date();
-      const hours = now.getHours();
-      // Peak hours: 8-10 AM and 5-7 PM (17-19)
-      const isPeakTime = (hours >= 8 && hours <= 10) || (hours >= 17 && hours <= 19);
-      setIsPeak(isPeakTime);
-    };
-
-    checkPeakTime();
-    const timer = setInterval(checkPeakTime, 60000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const PeakHoursDisplay = () => {
-    if (!isClient) {
-      return (
-        <div className="flex items-center gap-2">
-          <Clock className="h-4 w-4 text-muted-foreground" />
-          <Skeleton className="h-6 w-24 rounded-md" />
-        </div>
-      );
-    }
-    return (
-      <div className="flex items-center gap-2">
-        <Clock className="h-4 w-4 text-muted-foreground" />
-        <Badge variant={isPeak ? 'destructive' : 'default'} className={!isPeak ? 'bg-accent/80' : ''}>
-          {isPeak ? 'Peak Hours' : 'Off-Peak'}
-        </Badge>
-      </div>
-    );
-  };
-
   return (
     <header className="w-full border-b bg-background">
       <div className="container flex h-16 items-center justify-between">
@@ -56,18 +15,15 @@ export function Header() {
         </Link>
         
         {/* Desktop Nav */}
-        <div className="hidden items-center gap-6 md:flex">
-          <nav>
-            <Link
-              href="/info"
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary flex items-center gap-1"
-            >
-              <Info className="h-4 w-4" />
-              Traffic Info
-            </Link>
-          </nav>
-          <PeakHoursDisplay />
-        </div>
+        <nav className="hidden items-center gap-6 md:flex">
+          <Link
+            href="/info"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary flex items-center gap-1"
+          >
+            <Info className="h-4 w-4" />
+            Traffic Info
+          </Link>
+        </nav>
 
         {/* Mobile Nav */}
         <div className="md:hidden">
@@ -98,9 +54,6 @@ export function Header() {
                     Traffic Info
                   </Link>
                 </nav>
-                <div className="mt-auto">
-                  <PeakHoursDisplay />
-                </div>
               </div>
             </SheetContent>
           </Sheet>
