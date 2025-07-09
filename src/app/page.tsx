@@ -6,7 +6,8 @@ import { getTrafficInsights } from '@/lib/actions';
 import { TrafficForm } from '@/components/traffic-form';
 import { TrafficAnalysis } from '@/components/traffic-analysis';
 import { TrafficDataTable } from '@/components/traffic-data-table';
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/hooks/use-toast";
+import { TrafficInfo } from '@/components/traffic-info';
 
 function Header() {
   return (
@@ -62,6 +63,9 @@ export default function Home() {
       </div>
       <div className="mt-12">
         <TrafficDataTable data={recordedData} />
+      </div>
+      <div className="mt-12">
+        <TrafficInfo />
       </div>
     </main>
   );

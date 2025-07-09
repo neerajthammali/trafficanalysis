@@ -13,7 +13,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -24,6 +23,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Bike, CarFront, Car, Truck, LoaderCircle } from 'lucide-react';
+import { CounterInput } from './counter-input';
 
 interface TrafficFormProps {
   onSubmit: (data: TrafficData) => void;
@@ -62,7 +62,8 @@ export function TrafficForm({ onSubmit, isLoading }: TrafficFormProps) {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-4 rounded-lg border p-4">
+              <h3 className="text-lg font-medium">Vehicle Counts</h3>
               {vehicleTypes.map((vehicle) => (
                 <FormField
                   key={vehicle.name}
@@ -70,14 +71,16 @@ export function TrafficForm({ onSubmit, isLoading }: TrafficFormProps) {
                   name={vehicle.name}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <vehicle.icon className="h-5 w-5 text-accent" />
-                        {vehicle.label}
-                      </FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="0" {...field} />
-                      </FormControl>
-                      <FormMessage />
+                      <div className="flex items-center justify-between">
+                        <FormLabel className="flex items-center gap-2 font-medium">
+                          <vehicle.icon className="h-5 w-5 text-primary" />
+                          {vehicle.label}
+                        </FormLabel>
+                        <FormControl>
+                          <CounterInput value={field.value} onChange={field.onChange} />
+                        </FormControl>
+                      </div>
+                      <FormMessage className="text-right" />
                     </FormItem>
                   )}
                 />
