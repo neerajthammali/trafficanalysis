@@ -159,7 +159,7 @@ export default function Home() {
         const reportImage = await toPng(reportSectionRef.current, { 
             cacheBust: true, 
             pixelRatio: 2,
-            backgroundColor: 'white' // Explicitly set background for consistency
+            backgroundColor: 'white'
         });
         
         const doc = new jsPDF('p', 'px');
@@ -167,10 +167,10 @@ export default function Home() {
         const imgProps = doc.getImageProperties(reportImage);
         const imgHeight = (imgProps.height * docWidth) / imgProps.width;
         
-        doc.addImage(reportImage, 'PNG', 0, 0, docWidth, imgHeight);
+        doc.addImage(reportImage, 'PNG', 0, 0, docWidth, imgHeight, undefined, 'FAST');
         
         const pageCount = (doc as any).internal.getNumberOfPages();
-        if (pageCount > 1) { // Add page numbers only if there's more than one page
+        if (pageCount > 1) { 
             for (let i = 1; i <= pageCount; i++) {
                 doc.setPage(i);
                 doc.setFontSize(8);
