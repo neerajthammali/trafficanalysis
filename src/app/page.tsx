@@ -17,7 +17,11 @@ import { CounterInput } from '@/components/counter-input';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Bike, Car, CarFront, Users, Truck, Timer, Play, Redo, LoaderCircle, Share2, FileText } from 'lucide-react';
+import { Bike, Car, CarFront, Users, Truck, Timer, Play, Redo, LoaderCircle, Download } from 'lucide-react';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import { toPng } from 'html-to-image';
+
 
 const vehicleTypes = [
   { name: 'twoWheelers', label: '2-Wheelers', icon: Bike },
@@ -48,6 +52,7 @@ export default function Home() {
   const [recordedData, setRecordedData] = useState<RecordedTrafficData[]>([]);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPdfLoading, setIsPdfLoading] = useState(false);
   const { toast } = useToast();
   const chartRef = useRef<HTMLDivElement>(null);
   const reportSectionRef = useRef<HTMLDivElement>(null);
@@ -142,138 +147,110 @@ export default function Home() {
     setAnalysisResult(null);
     form.reset();
   }
-
-  const handleShareImage = async () => {
-    if (!reportSectionRef.current) {
-      toast({ variant: 'destructive', title: 'Report content not available.' });
-      return;
+  
+  const handleExportPdf = async () => {
+    if (!analysisResult || !chartRef.current) {
+        toast({ variant: 'destructive', title: 'Report content not available.' });
+        return;
     }
-    setIsLoading(true);
+    setIsPdfLoading(true);
 
     try {
-      const { toBlob } = await import('html-to-image');
-      const blob = await toBlob(reportSectionRef.current, {
-        cacheBust: true,
-        backgroundColor: window.getComputedStyle(document.body).backgroundColor,
-        pixelRatio: 1.5,
-      });
+        const doc = new jsPDF();
+        const chartImage = await toPng(chartRef.current, { cacheBust: true, pixelRatio: 2 });
+        
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(20);
+        doc.text('Traffic Analysis Report', 15, 20);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 15, 26);
+        doc.setLineWidth(0.5);
+        doc.line(15, 28, 195, 28);
 
-      if (!blob) throw new Error('Image creation failed');
+        let yPos = 35;
 
-      const file = new File([blob], 'traffic-report.png', { type: blob.type });
+        doc.addImage(chartImage, 'PNG', 15, yPos, 180, 90);
+        yPos += 100;
 
-      if (navigator.share && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: 'Traffic Analysis Report',
-          text: 'Here is my traffic analysis report.',
-        });
-      } else {
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'traffic-report.png';
-        link.click();
-        URL.revokeObjectURL(link.href);
-        toast({
-          title: "Report Downloaded",
-          description: "Web Share API is not available, the report was downloaded instead.",
-        });
-      }
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.text('AI-Powered Insights', 15, yPos);
+        yPos += 8;
+
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Conclusion & Precautions', 15, yPos);
+        yPos += 6;
+
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        const analysisText = `Conclusion: ${analysisResult.analysis.conclusion}\n\nPrecautions: ${analysisResult.analysis.precautions}`;
+        const splitAnalysisText = doc.splitTextToSize(analysisText, 180);
+        doc.text(splitAnalysisText, 15, yPos);
+        yPos += (splitAnalysisText.length * 4) + 10;
+
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Development Suggestions', 15, yPos);
+        yPos += 6;
+        
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        const suggestionsText = analysisResult.improvements.suggestions;
+        const splitSuggestionsText = doc.splitTextToSize(suggestionsText, 180);
+        doc.text(splitSuggestionsText, 15, yPos);
+        
+        if (recordedData.length > 0) {
+            doc.addPage();
+            yPos = 20;
+
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Survey Data', 15, yPos);
+            yPos += 10;
+
+            (doc as any).autoTable({
+                startY: yPos,
+                head: [['Interval', '2W', '3W', '4W', 'Heavy', 'Jams', 'Delays', 'Wrong Dir.', 'Locality', 'Cause']],
+                body: recordedData.map(entry => [
+                    entry.timeInterval,
+                    entry.twoWheelers,
+                    entry.threeWheelers,
+                    entry.fourWheelers,
+                    entry.heavyVehicles,
+                    entry.jams,
+                    entry.delays,
+                    entry.wrongDirection,
+                    entry.locality,
+                    entry.congestionCause
+                ]),
+                theme: 'grid',
+                headStyles: { fillColor: [22, 160, 133] },
+            });
+        }
+        
+        const pageCount = (doc as any).internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.text(`Page ${i} of ${pageCount}`, doc.internal.pageSize.width - 25, doc.internal.pageSize.height - 10);
+        }
+
+        doc.save('traffic-report.pdf');
+
     } catch (error) {
-      console.error('Failed to share image:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Sharing Failed',
-        description: 'An error occurred while trying to generate the image.',
-      });
+        console.error('Failed to export PDF:', error);
+        toast({
+            variant: 'destructive',
+            title: 'PDF Export Failed',
+            description: 'An error occurred while generating the PDF.',
+        });
     } finally {
-      setIsLoading(false);
+        setIsPdfLoading(false);
     }
   };
 
-  const handleExportWord = () => {
-    if (recordedData.length === 0) {
-      toast({
-        variant: 'destructive',
-        title: 'No data to export',
-        description: 'The survey data table is empty.',
-      });
-      return;
-    }
-
-    const header = `
-      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-      <head><meta charset='utf-8'><title>Traffic Survey Report</title>
-      <style>
-          body { font-family: Arial, sans-serif; }
-          table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-          th, td { border: 1px solid #dddddd; padding: 8px; text-align: left; }
-          th { background-color: #f2f2f2; }
-          h1 { color: #333; }
-      </style>
-      </head>
-      <body>
-          <h1>Traffic Survey Data</h1>
-          <p>Generated on: ${new Date().toLocaleString()}</p>
-          <table>
-              <thead>
-                  <tr>
-                      <th>Interval</th>
-                      <th>2-Wheelers</th>
-                      <th>3-Wheelers</th>
-                      <th>4-Wheelers</th>
-                      <th>Heavy Vehicles</th>
-                      <th>Jams</th>
-                      <th>Delays</th>
-                      <th>Wrong Direction</th>
-                      <th>Locality</th>
-                      <th>Congestion Cause</th>
-                  </tr>
-              </thead>
-              <tbody>
-    `;
-
-    const rows = recordedData.map(entry => `
-        <tr>
-            <td>${entry.timeInterval}</td>
-            <td>${entry.twoWheelers}</td>
-            <td>${entry.threeWheelers}</td>
-            <td>${entry.fourWheelers}</td>
-            <td>${entry.heavyVehicles}</td>
-            <td>${entry.jams}</td>
-            <td>${entry.delays}</td>
-            <td>${entry.wrongDirection}</td>
-            <td>${entry.locality}</td>
-            <td>${entry.congestionCause}</td>
-        </tr>
-    `).join('');
-
-    const footer = `
-              </tbody>
-          </table>
-      </body>
-      </html>
-    `;
-
-    const htmlContent = header + rows + footer;
-
-    const blob = new Blob(['\ufeff', htmlContent], {
-        type: 'application/msword'
-    });
-    
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'traffic-survey-data.doc';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(link.href);
-
-    toast({
-      title: "Report Downloaded",
-      description: "The survey data has been exported as a Word document.",
-    });
-  };
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -375,16 +352,13 @@ export default function Home() {
                 <CardContent className="p-4 flex flex-col sm:flex-row items-center justify-center gap-4">
                      <div className="text-center sm:text-left flex-1">
                         <h3 className="text-lg font-semibold">Survey Complete!</h3>
-                        <p className="text-sm text-muted-foreground">Your report is ready below. You can start a new survey or share your results.</p>
+                        <p className="text-sm text-muted-foreground">Your report is ready below. You can start a new survey or download your results as a PDF.</p>
                      </div>
                      <div className="flex flex-wrap items-center justify-center gap-2">
                         <Button onClick={handleReset} variant="outline" className="w-full sm:w-auto"><Redo className="mr-2" /> New Survey</Button>
-                        <Button onClick={handleExportWord} disabled={recordedData.length === 0} variant="outline" className="w-full sm:w-auto">
-                            <FileText className="mr-2" /> Export as Word
-                        </Button>
-                        <Button onClick={handleShareImage} disabled={!analysisResult || isLoading} className="w-full sm:w-auto bg-accent hover:bg-accent/90">
-                            {isLoading ? <LoaderCircle className="mr-2 animate-spin" /> : <Share2 className="mr-2" />}
-                            Share Image
+                        <Button onClick={handleExportPdf} disabled={!analysisResult || isPdfLoading} className="w-full sm:w-auto bg-primary hover:bg-primary/90">
+                          {isPdfLoading ? <LoaderCircle className="mr-2 animate-spin" /> : <Download className="mr-2" />}
+                          Download PDF
                         </Button>
                      </div>
                 </CardContent>
