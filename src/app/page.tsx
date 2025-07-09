@@ -17,7 +17,7 @@ import { CounterInput } from '@/components/counter-input';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Bike, Car, CarFront, Users, Truck, Timer, Play, Redo, LoaderCircle, Share2 } from 'lucide-react';
+import { Bike, Car, CarFront, Users, Truck, Timer, Play, Redo, LoaderCircle, Share2, FileText } from 'lucide-react';
 
 const vehicleTypes = [
   { name: 'twoWheelers', label: '2-Wheelers', icon: Bike },
@@ -191,6 +191,90 @@ export default function Home() {
     }
   };
 
+  const handleExportWord = () => {
+    if (recordedData.length === 0) {
+      toast({
+        variant: 'destructive',
+        title: 'No data to export',
+        description: 'The survey data table is empty.',
+      });
+      return;
+    }
+
+    const header = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head><meta charset='utf-8'><title>Traffic Survey Report</title>
+      <style>
+          body { font-family: Arial, sans-serif; }
+          table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+          th, td { border: 1px solid #dddddd; padding: 8px; text-align: left; }
+          th { background-color: #f2f2f2; }
+          h1 { color: #333; }
+      </style>
+      </head>
+      <body>
+          <h1>Traffic Survey Data</h1>
+          <p>Generated on: ${new Date().toLocaleString()}</p>
+          <table>
+              <thead>
+                  <tr>
+                      <th>Interval</th>
+                      <th>2-Wheelers</th>
+                      <th>3-Wheelers</th>
+                      <th>4-Wheelers</th>
+                      <th>Heavy Vehicles</th>
+                      <th>Jams</th>
+                      <th>Delays</th>
+                      <th>Wrong Direction</th>
+                      <th>Locality</th>
+                      <th>Congestion Cause</th>
+                  </tr>
+              </thead>
+              <tbody>
+    `;
+
+    const rows = recordedData.map(entry => `
+        <tr>
+            <td>${entry.timeInterval}</td>
+            <td>${entry.twoWheelers}</td>
+            <td>${entry.threeWheelers}</td>
+            <td>${entry.fourWheelers}</td>
+            <td>${entry.heavyVehicles}</td>
+            <td>${entry.jams}</td>
+            <td>${entry.delays}</td>
+            <td>${entry.wrongDirection}</td>
+            <td>${entry.locality}</td>
+            <td>${entry.congestionCause}</td>
+        </tr>
+    `).join('');
+
+    const footer = `
+              </tbody>
+          </table>
+      </body>
+      </html>
+    `;
+
+    const htmlContent = header + rows + footer;
+
+    const blob = new Blob(['\ufeff', htmlContent], {
+        type: 'application/msword'
+    });
+    
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'traffic-survey-data.doc';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+
+    toast({
+      title: "Report Downloaded",
+      description: "The survey data has been exported as a Word document.",
+    });
+  };
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
     const secs = (seconds % 60).toString().padStart(2, '0');
@@ -295,6 +379,9 @@ export default function Home() {
                      </div>
                      <div className="flex flex-wrap items-center justify-center gap-2">
                         <Button onClick={handleReset} variant="outline" className="w-full sm:w-auto"><Redo className="mr-2" /> New Survey</Button>
+                        <Button onClick={handleExportWord} disabled={recordedData.length === 0} variant="outline" className="w-full sm:w-auto">
+                            <FileText className="mr-2" /> Export as Word
+                        </Button>
                         <Button onClick={handleShareImage} disabled={!analysisResult || isLoading} className="w-full sm:w-auto bg-accent hover:bg-accent/90">
                             {isLoading ? <LoaderCircle className="mr-2 animate-spin" /> : <Share2 className="mr-2" />}
                             Share Image
