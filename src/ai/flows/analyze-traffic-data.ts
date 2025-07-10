@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -35,8 +36,8 @@ const AnalyzeTrafficDataInputSchema = z.object({
 export type AnalyzeTrafficDataInput = z.infer<typeof AnalyzeTrafficDataInputSchema>;
 
 const AnalyzeTrafficDataOutputSchema = z.object({
-  conclusion: z.string().describe('A short, snappy conclusion about the traffic flow. Easy to read!'),
-  precautions: z.string().describe('A simple, scannable list of safety tips.'),
+  conclusion: z.string().describe('A short, snappy conclusion about the traffic flow. Easy to read! Between 50 and 150 words.'),
+  precautions: z.string().describe('A simple, scannable list of safety tips. Use bullet points. Between 50 and 150 words.'),
 });
 export type AnalyzeTrafficDataOutput = z.infer<typeof AnalyzeTrafficDataOutputSchema>;
 

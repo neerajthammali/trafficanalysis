@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview AI agent that suggests traffic improvements based on traffic analysis and user inputs.
@@ -34,7 +35,7 @@ export type SuggestTrafficImprovementsInput = z.infer<
 const SuggestTrafficImprovementsOutputSchema = z.object({
   suggestions: z
     .string()
-    .describe('A simple, scannable list of cool ideas to improve traffic, like skywalks or wider roads. Fun and easy to read!'),
+    .describe('A simple, scannable list of cool ideas to improve traffic, like skywalks or wider roads. Fun and easy to read! Use bullet points. Between 50 and 150 words.'),
 });
 export type SuggestTrafficImprovementsOutput = z.infer<
   typeof SuggestTrafficImprovementsOutputSchema
@@ -66,7 +67,7 @@ Here are the key problem areas identified from the data:
 - Additional Notes: {{{remarks}}}
 {{/if}}
 
-Based on this information, provide a simple, scannable list of development suggestions for the future.
+Based on this information, provide a simple, scannable list of development suggestions for the future using bullet points.
 Be direct and logical. For example:
 - If 'humanFlow' is high, suggest solutions like skywalks or wider sidewalks.
 - If 'jams' are high, suggest road widening or a new flyover.

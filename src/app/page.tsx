@@ -110,7 +110,6 @@ export default function Home() {
   };
 
   const handleDetailsSubmit = async (details: TrafficDetailsData) => {
-    setSurveyStep('analyzing');
     setIsLoading(true);
 
     const now = new Date();
@@ -125,19 +124,19 @@ export default function Home() {
 
     const newEntry = { ...fullData, id: now.toISOString() };
     setRecordedData(prev => [newEntry, ...prev]);
-    setSurveyStep('complete');
     
     try {
       const result = await getTrafficInsights(fullData);
       setAnalysisResult(result);
+      setSurveyStep('complete');
     } catch (error) {
       console.error("Failed to get traffic insights:", error);
       toast({
         variant: "destructive",
         title: "Analysis Failed",
-        description: "The AI failed to process the data. Please try again or check your API key.",
+        description: "The AI failed to process the data. Please try again or check the API key.",
       });
-      setAnalysisResult(null); // Clear previous results on error
+      setAnalysisResult(null);
     } finally {
       setIsLoading(false);
     }
@@ -162,13 +161,11 @@ export default function Home() {
         const doc = new jsPDF();
         const chartImage = await toPng(chartRef.current, { cacheBust: true, pixelRatio: 2, backgroundColor: 'white' });
   
-        // Title
         doc.setFontSize(20);
         doc.text("Traffic Analysis Report", 105, 20, { align: 'center' });
         doc.setFontSize(10);
         doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 28, { align: 'center' });
   
-        // Chart
         doc.setFontSize(16);
         doc.text("Vehicle Distribution", 14, 45);
         const imgProps = doc.getImageProperties(chartImage);
@@ -178,7 +175,6 @@ export default function Home() {
         doc.addImage(chartImage, 'PNG', 14, 50, imgWidth, imgHeight);
         let yPos = 50 + imgHeight + 10;
   
-        // AI Analysis & Precautions
         doc.setFontSize(16);
         doc.text("AI Analysis & Precautions", 14, yPos);
         yPos += 8;
@@ -198,23 +194,20 @@ export default function Home() {
         doc.text(splitText, 14, yPos);
         yPos += (splitText.length * 5) + 10;
   
-        // AI Development Suggestions
         doc.setFontSize(16);
         doc.text("Development Suggestions", 14, yPos);
         yPos += 8;
         splitText = doc.splitTextToSize(analysisResult.improvements.suggestions, pdfWidth - 28);
         doc.setFontSize(10);
         doc.text(splitText, 14, yPos);
-        yPos += (splitText.length * 5) + 10;
-  
-        // Data Table
+        yPos = doc.internal.pageSize.getHeight() > yPos + (splitText.length * 5) + 20 ? yPos + (splitText.length * 5) + 10 : (doc.addPage(), 20);
+
         (doc as any).autoTable({
             head: [['Interval', '2W', '3W', '4W', 'Heavy', 'Jams', 'Delays', 'Wrong Dir.', 'Locality', 'Cause']],
             body: recordedData.map(d => [d.timeInterval, d.twoWheelers, d.threeWheelers, d.fourWheelers, d.heavyVehicles, d.jams, d.delays, d.wrongDirection, d.locality, d.congestionCause]),
             startY: yPos,
-            headStyles: { fillColor: [41, 128, 185] }, // A blue shade for header
-            didDrawPage: (data) => {
-              // Footer with page numbers
+            headStyles: { fillColor: [41, 128, 185] }, 
+            didDrawPage: (data: any) => {
               doc.setFontSize(10);
               doc.text(`Page ${doc.internal.pages.length-1}`, data.settings.margin.left, doc.internal.pageSize.getHeight() - 10);
             }
@@ -307,11 +300,10 @@ export default function Home() {
             </div>
             <div className="md:col-span-2 space-y-8">
               <div className="bg-card p-2 rounded-lg shadow-md"><TrafficChart data={chartData} /></div>
-              <TrafficAnalysis analysisResult={analysisResult} isLoading={isLoading} />
+              <TrafficDataTable data={recordedData} />
             </div>
           </div>
         );
-      case 'analyzing':
       case 'complete':
         return (
            <div className="space-y-8">
