@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Bike, Car, CarFront, Truck, Timer, Play, Redo, LoaderCircle, Download } from 'lucide-react';
 import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import { toPng } from 'html-to-image';
 
 
@@ -44,7 +45,7 @@ function PageHeader() {
 }
 
 export default function Home() {
-  const [surveyStep, setSurveyStep] = useState<'idle' | 'running' | 'details' | 'analyzing' | 'complete'>('idle');
+  const [surveyStep, setSurveyStep] = useState<'idle' | 'running' | 'details' | 'complete'>('idle');
   const [duration, setDuration] = useState(1);
   const [timeLeft, setTimeLeft] = useState(0);
   const [vehicleCounts, setVehicleCounts] = useState({ twoWheelers: 0, threeWheelers: 0, fourWheelers: 0, heavyVehicles: 0 });
@@ -55,6 +56,7 @@ export default function Home() {
   const [isPdfLoading, setIsPdfLoading] = useState(false);
   const { toast } = useToast();
   const reportSectionRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<HTMLDivElement>(null);
 
 
   const form = useForm<TrafficDetailsData>({
@@ -123,7 +125,8 @@ export default function Home() {
 
     const newEntry = { ...fullData, id: now.toISOString() };
     setRecordedData(prev => [newEntry, ...prev]);
-
+    setSurveyStep('complete');
+    
     try {
       const result = await getTrafficInsights(fullData);
       setAnalysisResult(result);
@@ -134,10 +137,9 @@ export default function Home() {
         title: "Analysis Failed",
         description: "The AI failed to process the data. Please try again or check your API key.",
       });
-      setSurveyStep('details');
+      setAnalysisResult(null); // Clear previous results on error
     } finally {
       setIsLoading(false);
-      setSurveyStep('complete');
     }
   };
   
@@ -150,37 +152,76 @@ export default function Home() {
   }
   
   const handleExportPdf = async () => {
-    if (!reportSectionRef.current) {
-        toast({ variant: 'destructive', title: 'Report content not available.' });
+    if (!chartRef.current || recordedData.length === 0 || !analysisResult) {
+        toast({ variant: 'destructive', title: 'Report content not available.', description: 'Please complete a survey to generate a report.' });
         return;
     }
     setIsPdfLoading(true);
-
+  
     try {
-        const reportImage = await toPng(reportSectionRef.current, { 
-            cacheBust: true, 
-            pixelRatio: 2,
-            backgroundColor: 'white'
-        });
-        
-        const doc = new jsPDF('p', 'px', 'a4');
-        const docWidth = doc.internal.pageSize.getWidth();
-        const imgProps = doc.getImageProperties(reportImage);
-        const imgHeight = (imgProps.height * docWidth) / imgProps.width;
-        
-        doc.addImage(reportImage, 'PNG', 0, 0, docWidth, imgHeight, undefined, 'FAST');
-        
-        const pageCount = (doc as any).internal.getNumberOfPages();
-        if (pageCount > 1) { 
-            for (let i = 1; i <= pageCount; i++) {
-                doc.setPage(i);
-                doc.setFontSize(8);
-                doc.text(`Page ${i} of ${pageCount}`, doc.internal.pageSize.width - 40, doc.internal.pageSize.height - 10);
+        const doc = new jsPDF();
+        const chartImage = await toPng(chartRef.current, { cacheBust: true, pixelRatio: 2, backgroundColor: 'white' });
+  
+        // Title
+        doc.setFontSize(20);
+        doc.text("Traffic Analysis Report", 105, 20, { align: 'center' });
+        doc.setFontSize(10);
+        doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 28, { align: 'center' });
+  
+        // Chart
+        doc.setFontSize(16);
+        doc.text("Vehicle Distribution", 14, 45);
+        const imgProps = doc.getImageProperties(chartImage);
+        const pdfWidth = doc.internal.pageSize.getWidth();
+        const imgWidth = pdfWidth - 28;
+        const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+        doc.addImage(chartImage, 'PNG', 14, 50, imgWidth, imgHeight);
+        let yPos = 50 + imgHeight + 10;
+  
+        // AI Analysis & Precautions
+        doc.setFontSize(16);
+        doc.text("AI Analysis & Precautions", 14, yPos);
+        yPos += 8;
+        doc.setFontSize(12);
+        doc.text("Conclusion:", 14, yPos);
+        yPos += 7;
+        let splitText = doc.splitTextToSize(analysisResult.analysis.conclusion, pdfWidth - 28);
+        doc.setFontSize(10);
+        doc.text(splitText, 14, yPos);
+        yPos += (splitText.length * 5) + 5;
+  
+        doc.setFontSize(12);
+        doc.text("Precautions:", 14, yPos);
+        yPos += 7;
+        splitText = doc.splitTextToSize(analysisResult.analysis.precautions, pdfWidth - 28);
+        doc.setFontSize(10);
+        doc.text(splitText, 14, yPos);
+        yPos += (splitText.length * 5) + 10;
+  
+        // AI Development Suggestions
+        doc.setFontSize(16);
+        doc.text("Development Suggestions", 14, yPos);
+        yPos += 8;
+        splitText = doc.splitTextToSize(analysisResult.improvements.suggestions, pdfWidth - 28);
+        doc.setFontSize(10);
+        doc.text(splitText, 14, yPos);
+        yPos += (splitText.length * 5) + 10;
+  
+        // Data Table
+        (doc as any).autoTable({
+            head: [['Interval', '2W', '3W', '4W', 'Heavy', 'Jams', 'Delays', 'Wrong Dir.', 'Locality', 'Cause']],
+            body: recordedData.map(d => [d.timeInterval, d.twoWheelers, d.threeWheelers, d.fourWheelers, d.heavyVehicles, d.jams, d.delays, d.wrongDirection, d.locality, d.congestionCause]),
+            startY: yPos,
+            headStyles: { fillColor: [41, 128, 185] }, // A blue shade for header
+            didDrawPage: (data) => {
+              // Footer with page numbers
+              doc.setFontSize(10);
+              doc.text(`Page ${doc.internal.pages.length-1}`, data.settings.margin.left, doc.internal.pageSize.getHeight() - 10);
             }
-        }
-        
+        });
+  
         doc.save('traffic-analysis-report.pdf');
-
+  
     } catch (error) {
         console.error('Failed to export PDF:', error);
         toast({
@@ -192,7 +233,6 @@ export default function Home() {
         setIsPdfLoading(false);
     }
   };
-
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -283,7 +323,7 @@ export default function Home() {
                      </div>
                      <div className="flex flex-wrap items-center justify-center gap-2">
                         <Button onClick={handleReset} variant="outline" className="w-full sm:w-auto"><Redo className="mr-2" /> New Survey</Button>
-                        <Button onClick={handleExportPdf} disabled={isLoading || isPdfLoading} className="w-full sm:w-auto bg-primary hover:bg-primary/90">
+                        <Button onClick={handleExportPdf} disabled={isPdfLoading} className="w-full sm:w-auto bg-primary hover:bg-primary/90">
                           {isPdfLoading ? <LoaderCircle className="mr-2 animate-spin" /> : <Download className="mr-2" />}
                           Download PDF
                         </Button>
@@ -291,28 +331,29 @@ export default function Home() {
                 </CardContent>
             </Card>
 
-            <div ref={reportSectionRef} className="p-4 sm:p-6 bg-white dark:bg-card rounded-lg border shadow-lg space-y-6">
+            <div ref={reportSectionRef} className="space-y-6">
                 <div className="text-center pb-4 border-b">
                     <h2 className="font-headline text-3xl font-bold text-primary">Traffic Analysis Report</h2>
                     <p className="text-muted-foreground">Generated on {new Date().toLocaleDateString()}</p>
                 </div>
                 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div className="lg:col-span-2 bg-card p-2 rounded-lg">
-                        <TrafficChart data={chartData} />
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
+                    <div className="lg:col-span-2 space-y-6">
+                        <div ref={chartRef} className="bg-card p-2 rounded-lg shadow-md border"><TrafficChart data={chartData} /></div>
+                        <TrafficAnalysis analysisResult={analysisResult} isLoading={isLoading} />
                     </div>
                     
-                    <TrafficAnalysis analysisResult={analysisResult} isLoading={isLoading && !analysisResult} />
+                    <div className="lg:col-span-3">
+                      <Card>
+                          <CardHeader>
+                              <CardTitle className="font-headline text-2xl">Survey Data</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                              <TrafficDataTable data={recordedData} />
+                          </CardContent>
+                      </Card>
+                    </div>
                 </div>
-                
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline text-2xl">Survey Data</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <TrafficDataTable data={recordedData} />
-                    </CardContent>
-                </Card>
             </div>
           </div>
         );

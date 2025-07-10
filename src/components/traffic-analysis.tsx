@@ -1,6 +1,7 @@
+
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { AnalysisResult } from '@/lib/types';
 import { FileText, Wrench } from 'lucide-react';
@@ -16,7 +17,6 @@ export function TrafficAnalysis({ analysisResult, isLoading }: TrafficAnalysisPr
       <Card>
         <CardHeader>
           <Skeleton className="h-7 w-48" />
-          <Skeleton className="h-4 w-64 mt-1" />
         </CardHeader>
         <CardContent className="space-y-4">
           <Skeleton className="h-4 w-full" />
@@ -37,29 +37,15 @@ export function TrafficAnalysis({ analysisResult, isLoading }: TrafficAnalysisPr
     </>
   );
 
-  const renderPlaceholder = () => (
-    <div className="lg:col-span-2">
-        <Card className="flex flex-col items-center justify-center text-center p-8 h-full min-h-[400px]">
-        <div className="p-4 bg-secondary rounded-full mb-4">
-            <FileText className="h-12 w-12 text-primary" />
-        </div>
-        <CardTitle className="font-headline text-2xl">Awaiting Data</CardTitle>
-        <CardDescription className="mt-2 max-w-xs">
-            Submit traffic data using the form to generate an AI-powered analysis and see recommendations here.
-        </CardDescription>
-        </Card>
-    </div>
-  );
-
   const renderContent = () => {
     if (!analysisResult) return null;
     const { analysis, improvements } = analysisResult;
     return (
       <>
-        <Card className="shadow-lg">
+        <Card className="shadow-lg h-full">
           <CardHeader>
-            <CardTitle className="font-headline flex items-center gap-2 text-2xl text-primary">
-              <FileText className="h-6 w-6" /> Analysis & Precautions
+            <CardTitle className="font-headline flex items-center gap-2 text-xl text-primary">
+              <FileText className="h-5 w-5" /> Analysis & Precautions
             </CardTitle>
           </CardHeader>
           <CardContent className="prose prose-sm dark:prose-invert max-w-none space-y-4">
@@ -73,10 +59,10 @@ export function TrafficAnalysis({ analysisResult, isLoading }: TrafficAnalysisPr
             </div>
           </CardContent>
         </Card>
-        <Card className="shadow-lg">
+        <Card className="shadow-lg h-full">
           <CardHeader>
-            <CardTitle className="font-headline flex items-center gap-2 text-2xl text-accent">
-              <Wrench className="h-6 w-6" /> Development Suggestions
+            <CardTitle className="font-headline flex items-center gap-2 text-xl text-accent">
+              <Wrench className="h-5 w-5" /> Development Suggestions
             </CardTitle>
           </CardHeader>
           <CardContent className="prose prose-sm dark:prose-invert max-w-none">
@@ -88,6 +74,6 @@ export function TrafficAnalysis({ analysisResult, isLoading }: TrafficAnalysisPr
   };
   
   if (isLoading) return renderSkeletons();
-  if (!analysisResult) return renderPlaceholder();
+  if (!analysisResult && !isLoading) return null;
   return renderContent();
 }
