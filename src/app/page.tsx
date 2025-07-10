@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -19,7 +20,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Bike, Car, CarFront, Truck, Timer, Play, Redo, LoaderCircle, Download } from 'lucide-react';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
 import { toPng } from 'html-to-image';
 
 
@@ -133,7 +133,7 @@ export default function Home() {
       toast({
         variant: "destructive",
         title: "Analysis Failed",
-        description: "The AI failed to process the data. Please try again.",
+        description: "The AI failed to process the data. Please check your API key and try again.",
       });
       setSurveyStep('details'); // Go back to details step on failure
     } finally {
@@ -145,6 +145,7 @@ export default function Home() {
     setSurveyStep('idle');
     setVehicleCounts({ twoWheelers: 0, threeWheelers: 0, fourWheelers: 0, heavyVehicles: 0 });
     setAnalysisResult(null);
+    setRecordedData([]);
     form.reset();
   }
   
@@ -162,7 +163,7 @@ export default function Home() {
             backgroundColor: 'white'
         });
         
-        const doc = new jsPDF('p', 'px');
+        const doc = new jsPDF('p', 'px', 'a4');
         const docWidth = doc.internal.pageSize.getWidth();
         const imgProps = doc.getImageProperties(reportImage);
         const imgHeight = (imgProps.height * docWidth) / imgProps.width;

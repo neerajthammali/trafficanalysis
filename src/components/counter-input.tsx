@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -29,7 +30,7 @@ export function CounterInput({ value, onChange }: CounterInputProps) {
     };
     
     const handleBlur = () => {
-        if (safeValue === 0 || isNaN(safeValue)) {
+        if (isNaN(safeValue)) {
             onChange(0);
         }
     };
