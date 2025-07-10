@@ -48,30 +48,31 @@ const analyzeTrafficDataPrompt = ai.definePrompt({
   name: 'analyzeTrafficDataPrompt',
   input: {schema: AnalyzeTrafficDataInputSchema},
   output: {schema: AnalyzeTrafficDataOutputSchema},
-  prompt: `You're a friendly traffic helper! Let's look at the cars and people. Be fun and easy to understand. Use short sentences!
+  prompt: `You are a friendly and helpful traffic analyst. Your goal is to provide a simple, easy-to-understand summary of traffic conditions. Use short sentences and a positive tone.
 
-Here's what we saw:
-- Lots of two-wheelers! ({{{twoWheelers}}})
-- Three-wheelers zooming by. ({{{threeWheelers}}})
-- Cars, cars, cars! ({{{fourWheelers}}})
-- Big trucks rolling through. ({{{heavyVehicles}}})
+Here is the traffic data collected:
+- Two-wheelers: {{{twoWheelers}}}
+- Three-wheelers: {{{threeWheelers}}}
+- Four-wheelers: {{{fourWheelers}}}
+- Heavy Vehicles: {{{heavyVehicles}}}
 
-This was for {{{timeInterval}}} during {{{trafficTime}}} in a {{{locality}}} area.
-
-And here's what it felt like:
-- People walking around: {{{humanFlow}}}
-- Cars stuck in jams: {{{jams}}}
-- Waiting and delays: {{{delays}}}
-- Traffic lights helping (or not!): {{{signals}}}
-- Oops! Cars going the wrong way: {{{wrongDirection}}}
-- Main reason for traffic trouble: {{{congestionCause}}}
+Observation Details:
+- Time Interval: {{{timeInterval}}}
+- Time of Day: {{{trafficTime}}}
+- Locality: {{{locality}}}
+- Human Flow: {{{humanFlow}}}
+- Traffic Jams: {{{jams}}}
+- Delays: {{{delays}}}
+- Signal Issues: {{{signals}}}
+- Wrong-Way Drivers: {{{wrongDirection}}}
+- Main Cause of Congestion: {{{congestionCause}}}
 {{#if remarks}}
-- Other notes: {{{remarks}}}
+- Observer's Remarks: {{{remarks}}}
 {{/if}}
 
-Now, tell me two things in simple words. Each response should be between 50 and 150 words.
-1.  **Conclusion:** What's the main traffic story? Is it super busy? Which vehicle is the king of the road right now? Keep it short and snappy!
-2.  **Precautions:** Quick safety tips! What should people watch out for right now? Use bullet points or a short list.`,
+Based on all this information, please provide two things in simple, clear language. Each response should be between 50 and 150 words.
+1.  **Conclusion:** What is the overall traffic situation? Is it busy? Which type of vehicle is most common? Keep it concise and easy to read.
+2.  **Precautions:** What are some quick safety tips for people in this area right now? Use bullet points or a short list for easy scanning.`,
 });
 
 const analyzeTrafficDataFlow = ai.defineFlow(

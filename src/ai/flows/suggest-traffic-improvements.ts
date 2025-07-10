@@ -50,25 +50,30 @@ const prompt = ai.definePrompt({
   name: 'suggestTrafficImprovementsPrompt',
   input: {schema: SuggestTrafficImprovementsInputSchema},
   output: {schema: SuggestTrafficImprovementsOutputSchema},
-  prompt: `You're a super city planner! Your job is to make traffic better for everyone. Use simple words and short ideas. The entire response should be between 50 and 150 words.
+  prompt: `You are a creative city planner tasked with suggesting future development ideas to improve traffic flow. Use simple language and present your ideas clearly. The entire response should be between 50 and 150 words.
 
-Here's the situation: {{{trafficAnalysis}}}
+Here's the summary of the current traffic situation: {{{trafficAnalysis}}}
 This is in a {{{locality}}} area.
 
-And here are the trouble spots:
-- People traffic: {{{humanFlow}}}
-- Car Jams: {{{jams}}}
-- Annoying Delays: {{{delays}}}
-- Mixed-up Signals: {{{signals}}}
-- Wrong Way Drivers: {{{wrongDirection}}}
-- Main Cause: {{{congestionCause}}}
+Here are the key problem areas identified:
+- Pedestrian Traffic: {{{humanFlow}}}
+- Vehicle Jams: {{{jams}}}
+- Travel Delays: {{{delays}}}
+- Traffic Signal Performance: {{{signals}}}
+- Wrong-Way Driving Incidents: {{{wrongDirection}}}
+- Main Cause of Congestion: {{{congestionCause}}}
 {{#if remarks}}
-- Other notes from the observer: {{{remarks}}}
+- Additional Notes: {{{remarks}}}
 {{/if}}
 
-Based on this, give some cool ideas to fix things for the future!
-Make your suggestions a simple, scannable list.
-If 'humanFlow' is high, maybe suggest a skywalk. If 'jams' are high, maybe suggest making the road bigger. If 'congestionCause' is 'Road Work', suggest better planning for construction. If 'locality' is 'Commercial', suggest better parking. If 'remarks' mentions things like 'potholes' or 'bad road', suggest road repair. Be direct and use easy-to-read language.`,
+Based on this information, provide a simple, scannable list of development suggestions for the future.
+Be direct and logical. For example:
+- If 'humanFlow' is high, suggest solutions like skywalks or wider sidewalks.
+- If 'jams' are high, suggest road widening or a new flyover.
+- If 'congestionCause' is 'Road Work', suggest better planning for future construction projects.
+- If 'locality' is 'Commercial', suggest improved parking facilities.
+- If 'remarks' mention issues like 'potholes' or 'bad road', suggest immediate road repair and maintenance.
+- If 'wrongDirection' is high, suggest installing better signage or road dividers.`,
 });
 
 const suggestTrafficImprovementsFlow = ai.defineFlow(

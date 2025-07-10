@@ -133,7 +133,7 @@ export default function Home() {
       toast({
         variant: "destructive",
         title: "Analysis Failed",
-        description: "There was an error processing your request. Please try again.",
+        description: "The AI failed to process the data. Please try again.",
       });
       setSurveyStep('details'); // Go back to details step on failure
     } finally {
