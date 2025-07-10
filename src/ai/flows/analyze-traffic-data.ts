@@ -50,7 +50,7 @@ const analyzeTrafficDataPrompt = ai.definePrompt({
   output: {schema: AnalyzeTrafficDataOutputSchema},
   prompt: `You are a friendly and helpful traffic analyst. Your goal is to provide a simple, easy-to-understand summary of traffic conditions. Use short sentences and a positive tone.
 
-Here is the traffic data collected:
+Here is the traffic data you need to analyze:
 - Two-wheelers: {{{twoWheelers}}}
 - Three-wheelers: {{{threeWheelers}}}
 - Four-wheelers: {{{fourWheelers}}}
@@ -70,8 +70,8 @@ Observation Details:
 - Observer's Remarks: {{{remarks}}}
 {{/if}}
 
-Based on all this information, please provide two things in simple, clear language. Each response should be between 50 and 150 words.
-1.  **Conclusion:** What is the overall traffic situation? Is it busy? Which type of vehicle is most common? Keep it concise and easy to read.
+Based on this complete dataset, please provide two things in simple, clear language. Each response should be between 50 and 150 words.
+1.  **Conclusion:** Summarize the overall traffic situation. Is it busy? Which type of vehicle is most common? Keep it concise and easy to read.
 2.  **Precautions:** What are some quick safety tips for people in this area right now? Use bullet points or a short list for easy scanning.`,
 });
 

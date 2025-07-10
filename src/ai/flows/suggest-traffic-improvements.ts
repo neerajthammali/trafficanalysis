@@ -55,7 +55,7 @@ const prompt = ai.definePrompt({
 Here's the summary of the current traffic situation: {{{trafficAnalysis}}}
 This is in a {{{locality}}} area.
 
-Here are the key problem areas identified:
+Here are the key problem areas identified from the data:
 - Pedestrian Traffic: {{{humanFlow}}}
 - Vehicle Jams: {{{jams}}}
 - Travel Delays: {{{delays}}}

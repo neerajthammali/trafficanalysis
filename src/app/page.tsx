@@ -108,8 +108,8 @@ export default function Home() {
   };
 
   const handleDetailsSubmit = async (details: TrafficDetailsData) => {
-    setIsLoading(true);
     setSurveyStep('analyzing');
+    setIsLoading(true);
 
     const now = new Date();
     const isPeakTime = (now.getHours() >= 8 && now.getHours() <= 10) || (now.getHours() >= 17 && now.getHours() <= 19);
@@ -127,17 +127,17 @@ export default function Home() {
     try {
       const result = await getTrafficInsights(fullData);
       setAnalysisResult(result);
-      setSurveyStep('complete');
     } catch (error) {
       console.error("Failed to get traffic insights:", error);
       toast({
         variant: "destructive",
         title: "Analysis Failed",
-        description: "The AI failed to process the data. Please check your API key and try again.",
+        description: "The AI failed to process the data. Please try again or check your API key.",
       });
-      setSurveyStep('details'); // Go back to details step on failure
+      setSurveyStep('details');
     } finally {
       setIsLoading(false);
+      setSurveyStep('complete');
     }
   };
   
@@ -260,7 +260,6 @@ export default function Home() {
           </div>
         );
       case 'details':
-      case 'analyzing':
         return (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
             <div className="md:col-span-1">
@@ -272,9 +271,10 @@ export default function Home() {
             </div>
           </div>
         );
+      case 'analyzing':
       case 'complete':
         return (
-          <div className="space-y-8">
+           <div className="space-y-8">
             <Card>
                 <CardContent className="p-4 flex flex-col sm:flex-row items-center justify-center gap-4">
                      <div className="text-center sm:text-left flex-1">
@@ -283,7 +283,7 @@ export default function Home() {
                      </div>
                      <div className="flex flex-wrap items-center justify-center gap-2">
                         <Button onClick={handleReset} variant="outline" className="w-full sm:w-auto"><Redo className="mr-2" /> New Survey</Button>
-                        <Button onClick={handleExportPdf} disabled={!analysisResult || isPdfLoading} className="w-full sm:w-auto bg-primary hover:bg-primary/90">
+                        <Button onClick={handleExportPdf} disabled={isLoading || isPdfLoading} className="w-full sm:w-auto bg-primary hover:bg-primary/90">
                           {isPdfLoading ? <LoaderCircle className="mr-2 animate-spin" /> : <Download className="mr-2" />}
                           Download PDF
                         </Button>
@@ -297,11 +297,13 @@ export default function Home() {
                     <p className="text-muted-foreground">Generated on {new Date().toLocaleDateString()}</p>
                 </div>
                 
-                <div className="bg-card p-2 rounded-lg">
-                    <TrafficChart data={chartData} />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="lg:col-span-2 bg-card p-2 rounded-lg">
+                        <TrafficChart data={chartData} />
+                    </div>
+                    
+                    <TrafficAnalysis analysisResult={analysisResult} isLoading={isLoading && !analysisResult} />
                 </div>
-                
-                <TrafficAnalysis analysisResult={analysisResult} isLoading={false} />
                 
                 <Card>
                     <CardHeader>
